@@ -34,4 +34,14 @@ module "default" {
   enable_telemetry    = var.enable_telemetry # see variables.tf
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  timeouts = {
+    create = "31m",
+    update = "31m",
+    read   = "31m",
+    delete = "31m"
+  }
+  lock = {
+    name = "VMSSNoDelete"
+    kind = "CanNotDelete"
+  }
 }
