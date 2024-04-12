@@ -17,7 +17,6 @@ variable "resource_group_name" {
 variable "location" {
   type        = string
   description = "Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location."
-  default     = null
 }
 
 variable "name" {
@@ -25,7 +24,7 @@ variable "name" {
   description = "The name of the this resource."
   validation {
     error_message = "The name can be up to 80 characters long. It must begin with a word character, and it must end with either a word character, a number or a '_'. The name may contain word characters or '.', '-', '_'."
-    condition = can(regex("^\\w[\\w.-]{0,78}[\\w_]$",var.name))
+    condition     = can(regex("^\\w[\\w.-]{0,78}[\\w_]$", var.name))
   }
 }
 
@@ -45,6 +44,29 @@ variable "timeouts" {
 EOT
 }
 
+variable "flow_log" {
+  type = object({
+    enabled                   = string
+    name                      = string
+    network_security_group_id = string
+    retention_policy = object({
+      days    = string
+      enabled = string
+    })
+    storage_account_id = string
+    traffic_analytics = object({
+      enabled               = string
+      interval_in_minutes   = optional(number)
+      workspace_id          = string
+      workspace_region      = string
+      workspace_resource_id = string
+    })
+    version = optional(string, null)
+  })
+  default     = null
+  description = <<-EOT
+EOT
+}
 
 variable "diagnostic_settings" {
   type = map(object({

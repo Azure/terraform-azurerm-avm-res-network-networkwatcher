@@ -1,39 +1,36 @@
-# Change the default region if you already have a Network Watcher deployed to Central Canada.
+# Change the default region if you already have a Network Watcher deployed to Australia Central.
 # For simplicity code to find a random region is not included, as the random code can get complex.
 variable "region" {
   type        = string
   description = "Azure region where the resource should be deployed."
-  default     = "canadacentral"
+  default     = "australiacentral"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = ">= 0.4.1"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = var.region
+  name     = module.naming.resource_group.name_unique
   tags = {
-    source = "AVM Sample Advanced"
+    source = "AVM Sample Diagnostics Settings"
   }
 }
 
-resource "azurerm_user_assigned_identity" "this" {
+resource "azurerm_log_analytics_workspace" "this" {
   location            = azurerm_resource_group.this.location
-  name                = module.naming.user_assigned_identity.name_unique
+  name                = module.naming.log_analytics_workspace.name_unique
   resource_group_name = azurerm_resource_group.this.name
   tags = {
-    source = "AVM Sample Advanced"
+    source = "AVM Sample Diagnostics Settings"
   }
 }
 
-data "azurerm_client_config" "current" {}
-
 # This is the module call
-# with a data source.
 module "default" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
@@ -41,26 +38,13 @@ module "default" {
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
-  timeouts = {
-    create = "31m",
-    update = "31m",
-    read   = "31m",
-    delete = "31m"
-  }
-  role_assignments = {
-    role_assignment = {
-      principal_id               = azurerm_user_assigned_identity.this.principal_id
-      role_definition_id_or_name = "Reader"
-      description                = "Assign the Reader role to the deployment user on this virtual machine scale set resource scope."
+  diagnostic_settings = {
+    to_la = {
+      name                  = "to-la"
+      workspace_resource_id = azurerm_log_analytics_workspace.this.id
     }
   }
-  # Uncomment to add lock
-  #lock = {
-  #  name = "VMSSNoDelete"
-  #  kind = "CanNotDelete"
-  #}
   tags = {
-    source = "AVM Sample Advanced"
+    source = "AVM Sample Diagnostics Settings"
   }
 }
-

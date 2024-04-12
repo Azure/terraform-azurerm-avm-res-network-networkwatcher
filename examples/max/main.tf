@@ -33,4 +33,22 @@ module "default" {
   tags = {
     source = "AVM Sample Default"
   }
+  flow_log = {
+    enabled                   = true
+    name                      = "fl-max" // not yet supported in the naming module
+    network_security_group_id = azurerm_network_security_group.this.id
+    storage_account_id        = azurerm_storage_account.this.id
+    version                   = 2
+    retention_policy = {
+      days    = 30
+      enabled = true
+    }
+    traffic_analytics = {
+      enabled               = true
+      workspace_id          = azurerm_log_analytics_workspace.this.workspace_id
+      workspace_region      = var.region
+      workspace_resource_id = azurerm_log_analytics_workspace.this.id
+      interval_in_minutes   = 10
+    }
+  }
 }

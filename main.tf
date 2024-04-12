@@ -1,14 +1,8 @@
-data "azurerm_resource_group" "parent" {
-  count = var.location == null ? 1 : 0
-  name  = var.resource_group_name
-}
-
 resource "azurerm_network_watcher" "this" {
   location            = coalesce(var.location, local.resource_group_location)
   name                = var.name
   resource_group_name = var.resource_group_name
   tags                = var.tags
-
   dynamic "timeouts" {
     for_each = var.timeouts == null ? [] : [var.timeouts]
     content {
