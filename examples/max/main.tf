@@ -3,7 +3,7 @@
 variable "region" {
   type        = string
   description = "Azure region where the resource should be deployed."
-  default     = "canadaeast"
+  default     = "BrazilSouth"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
@@ -30,13 +30,23 @@ module "default" {
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
-  tags = {
-    source = "AVM Sample Default"
+  timeouts = {
+    create = "31m",
+    update = "31m",
+    read   = "31m",
+    delete = "31m"
+  }
+  role_assignments = {
+    role_assignment = {
+      principal_id               = azurerm_user_assigned_identity.this.principal_id
+      role_definition_id_or_name = "Reader"
+      description                = "Assign the Reader role to the deployment user on this virtual machine scale set resource scope."
+    }
   }
   flow_log = {
     enabled                   = true
-    name                      = "fl-max" // not yet supported in the naming module
-    network_security_group_id = azurerm_network_security_group.this.id
+    name                      = "fl-subnet" // not yet supported in the naming module
+    network_security_group_id = azurerm_network_security_group.subnet.id
     storage_account_id        = azurerm_storage_account.this.id
     version                   = 2
     retention_policy = {
@@ -50,5 +60,13 @@ module "default" {
       workspace_resource_id = azurerm_log_analytics_workspace.this.id
       interval_in_minutes   = 10
     }
+  }
+  # Uncomment to add lock
+  #lock = {
+  #  name = "VMSSNoDelete"
+  #  kind = "CanNotDelete"
+  #}
+  tags = {
+    source = "AVM Sample Default"
   }
 }
