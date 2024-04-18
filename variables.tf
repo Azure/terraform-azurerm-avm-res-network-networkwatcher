@@ -37,6 +37,7 @@ variable "timeouts" {
   })
   default     = null
   description = <<-EOT
+The timeouts block allows you to specify [timeouts](https://www.terraform.io/language/resources/syntax#operation-timeouts) for certain actions:
  - `create` - (Defaults to 30 minutes) Used when creating the Network Watcher.
  - `delete` - (Defaults to 30 minutes) Used when deleting the Network Watcher.
  - `read` - (Defaults to 5 minutes) Used when retrieving the Network Watcher.
@@ -62,9 +63,45 @@ variable "flow_logs" {
       workspace_resource_id = string
     })
     version = optional(string, null)
+    timeouts = object({
+      create = optional(string)
+      delete = optional(string)
+      read   = optional(string)
+      update = optional(string)
+    })
   }))
   default     = null
   description = <<-EOT
+
+  A map of role flow logs to create for the Network Watcher. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  
+ - `enabled` - (Required) Should Network Flow Logging be Enabled?
+ - `name` - (Required) The name of the Network Watcher Flow Log. Changing this forces a new resource to be created.
+ - `network_security_group_id` - (Required) The ID of the Network Security Group for which to enable flow logs for. Changing this forces a new resource to be created.
+ - `network_watcher_name` - (Required) The name of the Network Watcher. Changing this forces a new resource to be created.
+ - `storage_account_id` - (Required) The ID of the Storage Account where flow logs are stored.
+ - `version` - (Optional) The version (revision) of the flow log. Possible values are `1` and `2`.
+
+---
+ `retention_policy` block supports the following:
+ - `days` - (Required) The number of days to retain flow log records.
+ - `enabled` - (Required) Boolean flag to enable/disable retention.
+
+---
+ `traffic_analytics` block supports the following:
+ - `enabled` - (Required) Boolean flag to enable/disable traffic analytics.
+ - `interval_in_minutes` - (Optional) How frequently service should do flow analytics in minutes. Defaults to `60`.
+ - `workspace_id` - (Required) The resource GUID of the attached workspace.
+ - `workspace_region` - (Required) The location of the attached workspace.
+ - `workspace_resource_id` - (Required) The resource ID of the attached workspace.
+
+---
+ `timeouts` block supports the following. The timeouts block allows you to specify [timeouts](https://www.terraform.io/language/resources/syntax#operation-timeouts) for certain actions:
+ - `create` - (Defaults to 30 minutes) Used when creating the Network Watcher.
+ - `delete` - (Defaults to 30 minutes) Used when deleting the Network Watcher.
+ - `read` - (Defaults to 5 minutes) Used when retrieving the Network Watcher.
+ - `update` - (Defaults to 30 minutes) Used when updating the Network Watcher.
+
 EOT
 }
 

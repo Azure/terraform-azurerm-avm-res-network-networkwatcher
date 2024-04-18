@@ -30,7 +30,5 @@ module "default" {
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
-  tags = {
-    source = "AVM Sample Default"
-  }
+  tags = local.tags
 }

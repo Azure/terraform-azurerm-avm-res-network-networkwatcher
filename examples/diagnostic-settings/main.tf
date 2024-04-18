@@ -16,18 +16,14 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   location = var.region
   name     = module.naming.resource_group.name_unique
-  tags = {
-    source = "AVM Sample Diagnostics Settings"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_log_analytics_workspace" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.log_analytics_workspace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags = {
-    source = "AVM Sample Diagnostics Settings"
-  }
+  tags = local.tags
 }
 
 # This is the module call
@@ -44,7 +40,5 @@ module "default" {
       workspace_resource_id = azurerm_log_analytics_workspace.this.id
     }
   }
-  tags = {
-    source = "AVM Sample Diagnostics Settings"
-  }
+  tags = local.tags
 }

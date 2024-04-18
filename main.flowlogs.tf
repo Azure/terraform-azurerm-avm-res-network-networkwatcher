@@ -18,12 +18,12 @@ resource "azurerm_network_watcher_flow_log" "this" {
       }
     }
     dynamic "timeouts" {
-      for_each = var.timeouts == null ? [] : [var.timeouts]
+      for_each = each.value.timeouts == null ? [] : [each.value.timeouts]
       content {
-        create = timeouts.value.create
-        delete = timeouts.value.delete
-        read   = timeouts.value.read
-        update = timeouts.value.update
+        create = each.value.timeouts.create
+        delete = each.value.timeouts.delete
+        read   = each.value.timeouts.read
+        update = each.value.timeouts.update
       }
     }
     dynamic "traffic_analytics" {
