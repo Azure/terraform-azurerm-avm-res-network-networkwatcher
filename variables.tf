@@ -44,8 +44,8 @@ variable "timeouts" {
 EOT
 }
 
-variable "flow_log" {
-  type = object({
+variable "flow_logs" {
+  type = map(object({
     enabled                   = string
     name                      = string
     network_security_group_id = string
@@ -62,7 +62,7 @@ variable "flow_log" {
       workspace_resource_id = string
     })
     version = optional(string, null)
-  })
+  }))
   default     = null
   description = <<-EOT
 EOT
