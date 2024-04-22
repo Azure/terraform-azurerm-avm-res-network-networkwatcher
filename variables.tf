@@ -63,12 +63,12 @@ variable "flow_logs" {
       workspace_resource_id = string
     })
     version = optional(string, null)
-    timeouts = object({
+    timeouts = optional(object({
       create = optional(string)
       delete = optional(string)
       read   = optional(string)
       update = optional(string)
-    })
+    }))
   }))
   default     = null
   description = <<-EOT
@@ -88,7 +88,7 @@ variable "flow_logs" {
  - `enabled` - (Required) Boolean flag to enable/disable retention.
 
 ---
- `traffic_analytics` block supports the following:
+ `traffic_analytics` (Optional) Block supports the following:
  - `enabled` - (Required) Boolean flag to enable/disable traffic analytics.
  - `interval_in_minutes` - (Optional) How frequently service should do flow analytics in minutes. Defaults to `60`.
  - `workspace_id` - (Required) The resource GUID of the attached workspace.
@@ -96,7 +96,7 @@ variable "flow_logs" {
  - `workspace_resource_id` - (Required) The resource ID of the attached workspace.
 
 ---
- `timeouts` block supports the following. The timeouts block allows you to specify [timeouts](https://www.terraform.io/language/resources/syntax#operation-timeouts) for certain actions:
+ `timeouts` (Optional) Block supports the following. The timeouts block allows you to specify [timeouts](https://www.terraform.io/language/resources/syntax#operation-timeouts) for certain actions:
  - `create` - (Defaults to 30 minutes) Used when creating the Network Watcher.
  - `delete` - (Defaults to 30 minutes) Used when deleting the Network Watcher.
  - `read` - (Defaults to 5 minutes) Used when retrieving the Network Watcher.

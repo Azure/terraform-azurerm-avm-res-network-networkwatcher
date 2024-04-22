@@ -3,7 +3,7 @@
 variable "region" {
   type        = string
   description = "Azure region where the resource should be deployed."
-  default     = "canadaeast"
+  default     = "swedencentral"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
