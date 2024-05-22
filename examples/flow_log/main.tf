@@ -3,7 +3,7 @@
 variable "region" {
   type        = string
   description = "Azure region where the resource should be deployed."
-  default     = "polandcentral"
+  default     = "norwayeast"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
@@ -16,9 +16,7 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
   location = var.region
-  tags = {
-    source = "AVM Sample Default"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_network_watcher" "this" {
@@ -27,6 +25,7 @@ resource "azurerm_network_watcher" "this" {
   resource_group_name = azurerm_resource_group.this.name
   tags = local.tags
 }
+
 
 # This is the module call
 # with a data source.
@@ -38,25 +37,11 @@ module "default" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   network_watcher_id = azurerm_network_watcher.this.id
-  timeouts = {
-    create = "32m",
-    update = "32m",
-    read   = "32m",
-    delete = "32m"
-  }
-  role_assignments = {
-    role_assignment = {
-      principal_id               = azurerm_user_assigned_identity.this.principal_id
-      role_definition_id_or_name = "Reader"
-      description                = "Assign the Reader role to the deployment user on this virtual machine scale set resource scope."
-    }
-  }
-
   flow_logs = {
     subnet_flowlog = {
       enabled                   = true
-      name                      = "fl-subnet" // not yet supported in the naming module
-      network_security_group_id = azurerm_network_security_group.subnet.id
+      name                      = "fl-subnet" # not yet supported in the naming module
+      target_resource_id = azurerm_network_security_group.subnet.id
       storage_account_id        = azurerm_storage_account.this.id
       version                   = 2
       retention_policy = {
@@ -70,18 +55,43 @@ module "default" {
         workspace_resource_id = azurerm_log_analytics_workspace.this.id
         interval_in_minutes   = 10
       }
-      timeouts = {
-        create = "32m",
-        update = "32m",
-        read   = "32m",
-        delete = "32m"
+    }
+    nic_flowlog = {
+      enabled                   = true
+      name                      = "fl-nic" # not yet supported in the naming module
+      target_resource_id = azurerm_network_security_group.nic.id
+      storage_account_id        = azurerm_storage_account.this.id
+      version                   = 2
+      retention_policy = {
+        days    = 30
+        enabled = true
+      }
+      traffic_analytics = {
+        enabled               = true
+        workspace_id          = azurerm_log_analytics_workspace.this.workspace_id
+        workspace_region      = var.region
+        workspace_resource_id = azurerm_log_analytics_workspace.this.id
+        interval_in_minutes   = 10
+      }
+    }
+    vnet_flowlog = {
+      enabled                   = true
+      name                      = "fl-vnet" # not yet supported in the naming module
+      target_resource_id = azurerm_virtual_network.this.id
+      storage_account_id        = azurerm_storage_account.this.id
+      version                   = 2
+      retention_policy = {
+        days    = 30
+        enabled = true
+      }
+      traffic_analytics = {
+        enabled               = true
+        workspace_id          = azurerm_log_analytics_workspace.this.workspace_id
+        workspace_region      = var.region
+        workspace_resource_id = azurerm_log_analytics_workspace.this.id
+        interval_in_minutes   = 10
       }
     }
   }
-  # Uncomment to add lock
-  #lock = {
-  #  name = "VMSSNoDelete"
-  #  kind = "CanNotDelete"
-  #}
   tags = local.tags
 }

@@ -28,6 +28,11 @@ variable "name" {
   }
 }
 
+variable "network_watcher_id" {
+  type        = string
+  description = "The ID of the Network Watcher to attach the flow log to."
+}
+
 variable "timeouts" {
   type = object({
     create = optional(string)
@@ -49,10 +54,10 @@ variable "flow_logs" {
   type = map(object({
     enabled                   = string
     name                      = string
-    network_security_group_id = string
+    target_resource_id = string
     retention_policy = object({
-      days    = string
-      enabled = string
+      days    = number
+      enabled = bool
     })
     storage_account_id = string
     traffic_analytics = object({
@@ -62,7 +67,7 @@ variable "flow_logs" {
       workspace_region      = string
       workspace_resource_id = string
     })
-    version = optional(string, null)
+    version = optional(number, null)
     timeouts = optional(object({
       create = optional(string)
       delete = optional(string)
@@ -77,7 +82,7 @@ variable "flow_logs" {
   
  - `enabled` - (Required) Should Network Flow Logging be Enabled?
  - `name` - (Required) The name of the Network Watcher Flow Log. Changing this forces a new resource to be created.
- - `network_security_group_id` - (Required) The ID of the Network Security Group for which to enable flow logs for. Changing this forces a new resource to be created.
+ - `target_resource_id` - (Required) The ID of the Network Security Group or Virtual Network for which to enable flow logs for. Changing this forces a new resource to be created.
  - `network_watcher_name` - (Required) The name of the Network Watcher. Changing this forces a new resource to be created.
  - `storage_account_id` - (Required) The ID of the Storage Account where flow logs are stored.
  - `version` - (Optional) The version (revision) of the flow log. Possible values are `1` and `2`.

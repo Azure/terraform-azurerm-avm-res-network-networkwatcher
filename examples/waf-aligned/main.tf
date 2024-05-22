@@ -19,6 +19,13 @@ resource "azurerm_resource_group" "this" {
   tags = local.tags
 }
 
+resource "azurerm_network_watcher" "this" {
+  location            = var.region
+  name                = module.naming.network_watcher.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  tags = local.tags
+}
+
 # This is the module call
 # with a data source.
 module "default" {
@@ -28,6 +35,7 @@ module "default" {
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
+  network_watcher_id = azurerm_network_watcher.this.id
   flow_logs = {
     subnet_flowlog = {
       enabled                   = true
