@@ -1,9 +1,9 @@
-output "resource_connection_monitor" {
-  value       = module.network_watcher_connection_monitor.resource_connection_monitor
-  description = "This is the full output for the connection monitor resources."
+output "network_watcher" {
+  description = "This is the network watcher resource."
+  value       = azurerm_network_watcher.this
 }
 
-output "network_watcher" {
-  value       = azurerm_network_watcher.this
-  description = "This is the network watcher resource."
+output "resource_connection_monitor" {
+  description = "This is the full output for the connection monitor resources."
+  value       = module.network_watcher_connection_monitor.resource_connection_monitor
 }

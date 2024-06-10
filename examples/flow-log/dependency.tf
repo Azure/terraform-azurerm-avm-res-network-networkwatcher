@@ -101,8 +101,8 @@ resource "azurerm_network_security_group" "nic" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "example" {
-  subnet_id                 = azurerm_subnet.subnet.id
   network_security_group_id = azurerm_network_security_group.subnet.id
+  subnet_id                 = azurerm_subnet.subnet.id
 }
 
 data "azurerm_client_config" "current" {}
@@ -129,13 +129,13 @@ module "avm_res_keyvault_vault" {
     create = "60s"
   }
 
-  tags = {    
+  tags = {
     source = "AVM Sample Default Deployment"
   }
 }
 
 module "virtual_machine" {
-  source = "Azure/avm-res-compute-virtualmachine/azurerm"
+  source  = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.11.0"
 
   enable_telemetry                       = var.enable_telemetry
@@ -145,8 +145,8 @@ module "virtual_machine" {
   name                                   = module.naming.virtual_machine.name_unique
   admin_credential_key_vault_resource_id = module.avm_res_keyvault_vault.resource.id
   virtualmachine_sku_size                = "Standard_DS2_v2"
-  
-  zone                                   = 2
+
+  zone = 2
 
   source_image_reference = {
     publisher = "Canonical"
@@ -157,7 +157,7 @@ module "virtual_machine" {
 
   network_interfaces = {
     network_interface_1 = {
-      name = module.naming.network_interface.name_unique
+      name                      = module.naming.network_interface.name_unique
       network_security_group_id = azurerm_network_security_group.nic.id
       ip_configurations = {
         ip_configuration_1 = {
@@ -176,26 +176,26 @@ module "virtual_machine" {
 }
 
 resource "azurerm_storage_account" "this" {
+  account_replication_type = "LRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  tags = local.tags
+  tags                     = local.tags
 }
 
 resource "azurerm_log_analytics_workspace" "this" {
-  name                = module.naming.log_analytics_workspace.name_unique
   location            = azurerm_resource_group.this.location
+  name                = module.naming.log_analytics_workspace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  sku                 = "PerGB2018"
   retention_in_days   = 30
+  sku                 = "PerGB2018"
 }
 
 resource "azurerm_user_assigned_identity" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.user_assigned_identity.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags = local.tags
+  tags                = local.tags
 }
 

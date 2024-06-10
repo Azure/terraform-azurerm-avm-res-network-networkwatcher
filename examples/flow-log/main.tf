@@ -14,16 +14,16 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = var.region
-  tags = local.tags
+  name     = module.naming.resource_group.name_unique
+  tags     = local.tags
 }
 
 resource "azurerm_network_watcher" "this" {
   location            = var.region
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags = local.tags
+  tags                = local.tags
 }
 
 
@@ -36,14 +36,14 @@ module "default" {
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
-  network_watcher_id = azurerm_network_watcher.this.id
+  network_watcher_id  = azurerm_network_watcher.this.id
   flow_logs = {
     subnet_flowlog = {
-      enabled                   = true
-      name                      = "fl-subnet" # not yet supported in the naming module
+      enabled            = true
+      name               = "fl-subnet" # not yet supported in the naming module
       target_resource_id = azurerm_network_security_group.subnet.id
-      storage_account_id        = azurerm_storage_account.this.id
-      version                   = 2
+      storage_account_id = azurerm_storage_account.this.id
+      version            = 2
       retention_policy = {
         days    = 30
         enabled = true
@@ -57,11 +57,11 @@ module "default" {
       }
     }
     nic_flowlog = {
-      enabled                   = true
-      name                      = "fl-nic" # not yet supported in the naming module
+      enabled            = true
+      name               = "fl-nic" # not yet supported in the naming module
       target_resource_id = azurerm_network_security_group.nic.id
-      storage_account_id        = azurerm_storage_account.this.id
-      version                   = 2
+      storage_account_id = azurerm_storage_account.this.id
+      version            = 2
       retention_policy = {
         days    = 30
         enabled = true
@@ -75,11 +75,11 @@ module "default" {
       }
     }
     vnet_flowlog = {
-      enabled                   = true
-      name                      = "fl-vnet" # not yet supported in the naming module
+      enabled            = true
+      name               = "fl-vnet" # not yet supported in the naming module
       target_resource_id = azurerm_virtual_network.this.id
-      storage_account_id        = azurerm_storage_account.this.id
-      version                   = 2
+      storage_account_id = azurerm_storage_account.this.id
+      version            = 2
       retention_policy = {
         days    = 30
         enabled = true

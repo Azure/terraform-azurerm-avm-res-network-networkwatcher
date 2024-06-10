@@ -14,16 +14,16 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = var.region
-  tags = local.tags
+  name     = module.naming.resource_group.name_unique
+  tags     = local.tags
 }
 
 resource "azurerm_network_watcher" "this" {
   location            = var.region
   name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags = local.tags
+  tags                = local.tags
 }
 
 data "azurerm_client_config" "current" {}
@@ -38,7 +38,7 @@ module "default" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   network_watcher_id  = azurerm_network_watcher.this.id
-  tags = local.tags
+  tags                = local.tags
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
