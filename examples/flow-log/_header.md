@@ -1,4 +1,4 @@
-# Max example
+# Flow Log example
 
 This example deploys the module with an NSG Flow Log
 

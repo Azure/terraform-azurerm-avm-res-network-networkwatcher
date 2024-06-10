@@ -7,3 +7,7 @@ output "resource_flow_log" {
   description = "This is the full output for the flow log resources."
 }
 
+output "resource_connection_monitor" {
+  value       = azurerm_network_connection_monitor.this.*
+  description = "This is the full output for the connection monitor resources."
+}

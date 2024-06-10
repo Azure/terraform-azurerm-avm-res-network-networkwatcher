@@ -68,12 +68,6 @@ variable "flow_logs" {
       workspace_resource_id = string
     })
     version = optional(number, null)
-    timeouts = optional(object({
-      create = optional(string)
-      delete = optional(string)
-      read   = optional(string)
-      update = optional(string)
-    }))
   }))
   default     = null
   description = <<-EOT
@@ -201,3 +195,64 @@ variable "tags" {
   default     = {}
 }
 
+variable "condition_monitor" {
+  type = map(object({
+    name = string
+    endpoint = set(object({
+      address               = optional(string)
+      coverage_level        = optional(string)
+      excluded_ip_addresses = optional(set(string))
+      included_ip_addresses = optional(set(string))
+      name                  = string
+      target_resource_id    = optional(string)
+      target_resource_type  = optional(string)
+      filter = optional(object({
+        type = optional(string)
+        item = optional(set(object({
+          address = optional(string)
+          type    = optional(string)
+        })))
+      }))
+    }))
+    test_configuration = set(object({
+      name                      = string
+      preferred_ip_version      = optional(string)
+      protocol                  = string
+      test_frequency_in_seconds = optional(number)
+      http_configuration = optional(object({
+        method                   = optional(string)
+        path                     = optional(string)
+        port                     = optional(number)
+        prefer_https             = optional(bool)
+        protocol                 = string
+        valid_status_code_ranges = optional(set(string))
+        request_header = optional(set(object({
+          name  = string
+          value = string
+        })))
+      }))
+      icmp_configuration = optional(object({
+        trace_route_enabled = optional(bool)
+      }))
+      success_threshold = optional(object({
+        checks_failed_percent = optional(number)
+        round_trip_time_ms    = optional(number)
+      }))
+      tcp_configuration = optional(object({
+        destination_port_behavior = optional(string)
+        port                      = number
+        trace_route_enabled       = optional(bool)
+      }))
+    }))
+    test_group = set(object({
+        destination_endpoints    = set(string)
+        enabled                  = optional(bool)
+        name                     = string
+        source_endpoints         = set(string)
+        test_configuration_names = set(string)
+    }))
+    notes = optional(string,null)
+    output_workspace_resource_ids = optional(list(string),null)
+  }))
+  default = null
+}
