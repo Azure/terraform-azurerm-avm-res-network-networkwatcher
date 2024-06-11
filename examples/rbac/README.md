@@ -4,50 +4,46 @@
 This deploys the module in its simplest form.
 
 ```hcl
-terraform {
-  required_version = ">= 1.3.0"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 3.7.0, < 4.0.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "enable_telemetry" {
-  type        = bool
-  default     = true
-  description = <<DESCRIPTION
-This variable controls whether or not telemetry is enabled for the module.
-For more information see <https://aka.ms/avm/telemetryinfo>.
-If it is set to false, then no telemetry will be collected.
-DESCRIPTION
-}
-
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.0"
+  version = ">= 0.4.1"
 }
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
+  location = var.region
   name     = module.naming.resource_group.name_unique
-  location = "MYLOCATION" # TODO update with a real location, e.g. EastUS
+  tags     = local.tags
 }
 
-# This is the module call
-module "MYMODULE" {
-  source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry    = var.enable_telemetry
-  name                = "" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
+resource "azurerm_network_watcher" "this" {
+  location            = var.region
+  name                = module.naming.network_watcher.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  tags                = local.tags
+}
+
+data "azurerm_client_config" "current" {}
+
+# This is the module call
+# with a data source.
+module "default" {
+  source = "../../"
+  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  enable_telemetry    = var.enable_telemetry # see variables.tf
+  name                = azurerm_network_watcher.this.name
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  network_watcher_id  = azurerm_network_watcher.this.id
+  tags                = local.tags
+  role_assignments = {
+    role_assignment = {
+      principal_id               = data.azurerm_client_config.current.object_id
+      role_definition_id_or_name = "Reader"
+      description                = "Assign the Reader role to the deployment user on this network watcher."
+    }
+  }
 }
 ```
 
@@ -58,19 +54,23 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0, < 4.0.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.6.2, < 4.0.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.7.0, < 4.0.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
 
 ## Resources
 
 The following resources are used by this module:
 
+- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_watcher) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -91,6 +91,14 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_region"></a> [region](#input\_region)
+
+Description: Azure region where the resource should be deployed.
+
+Type: `string`
+
+Default: `"italynorth"`
+
 ## Outputs
 
 No outputs.
@@ -99,7 +107,7 @@ No outputs.
 
 The following Modules are called:
 
-### <a name="module_MYMODULE"></a> [MYMODULE](#module\_MYMODULE)
+### <a name="module_default"></a> [default](#module\_default)
 
 Source: ../../
 
@@ -109,7 +117,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: 0.4.0
+Version: >= 0.4.1
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

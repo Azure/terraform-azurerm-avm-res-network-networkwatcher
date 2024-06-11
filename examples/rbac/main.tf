@@ -1,11 +1,3 @@
-# Change the default region if you already have a Network Watcher deployed to Central East.
-# For simplicity code to find a random region is not included, as the random code can get complex.
-variable "region" {
-  type        = string
-  description = "Azure region where the resource should be deployed."
-  default     = "swedencentral"
-}
-
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
