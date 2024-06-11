@@ -1,5 +1,5 @@
 locals {
   tags = {
-    scenario = "Network Watcher WAF Aligned AVM Sample"
+    scenario = "Network Watcher Flow Logs AVM Sample"
   }
 }

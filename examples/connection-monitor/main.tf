@@ -29,6 +29,7 @@ module "network_watcher_connection_monitor" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   network_watcher_id  = azurerm_network_watcher.this.id
+  tags                = local.tags
 
   condition_monitor = {
     monitor = {

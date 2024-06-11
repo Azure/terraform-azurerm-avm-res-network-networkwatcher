@@ -109,7 +109,7 @@ data "azurerm_client_config" "current" {}
 
 module "avm_res_keyvault_vault" {
   source              = "Azure/avm-res-keyvault-vault/azurerm"
-  version             = ">= 0.5.0"
+  version             = ">= 0.6.0"
   tenant_id           = data.azurerm_client_config.current.tenant_id
   name                = module.naming.key_vault.name_unique
   resource_group_name = azurerm_resource_group.this.name
@@ -136,14 +136,14 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.11.0"
+  version = "0.14.0"
 
   enable_telemetry                       = var.enable_telemetry
   location                               = azurerm_resource_group.this.location
   resource_group_name                    = azurerm_resource_group.this.name
   virtualmachine_os_type                 = "Linux"
   name                                   = module.naming.virtual_machine.name_unique
-  admin_credential_key_vault_resource_id = module.avm_res_keyvault_vault.resource.id
+  admin_credential_key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
   virtualmachine_sku_size                = "Standard_DS2_v2"
 
   zone = 2

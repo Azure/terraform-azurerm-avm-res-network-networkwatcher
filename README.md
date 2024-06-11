@@ -264,17 +264,12 @@ A map of role flow logs to create for the Network Watcher. The map key is delibe
   - `workspace_id` - (Required) The resource GUID of the attached workspace.
   - `workspace_region` - (Required) The location of the attached workspace.
   - `workspace_resource_id` - (Required) The resource ID of the attached workspace.
-- `timeouts` (Optional) Supports the following. The timeouts block allows you to specify [timeouts](https://www.terraform.io/language/resources/syntax#operation-timeouts) for certain actions:
-  - `create` - (Defaults to 30 minutes) Used when creating the Network Watcher.
-  - `delete` - (Defaults to 30 minutes) Used when deleting the Network Watcher.
-  - `read` - (Defaults to 5 minutes) Used when retrieving the Network Watcher.
-  - `update` - (Defaults to 30 minutes) Used when updating the Network Watcher.
 
 Type:
 
 ```hcl
 map(object({
-    enabled            = string
+    enabled            = bool
     name               = string
     target_resource_id = string
     retention_policy = object({
@@ -282,13 +277,13 @@ map(object({
       enabled = bool
     })
     storage_account_id = string
-    traffic_analytics = object({
-      enabled               = string
+    traffic_analytics = optional(object({
+      enabled               = bool
       interval_in_minutes   = optional(number)
       workspace_id          = string
       workspace_region      = string
       workspace_resource_id = string
-    })
+    }), null)
     version = optional(number, null)
   }))
 ```

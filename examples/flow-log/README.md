@@ -196,7 +196,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: >= 0.5.0
+Version: >= 0.6.0
 
 ### <a name="module_default"></a> [default](#module\_default)
 
@@ -214,7 +214,7 @@ Version: >= 0.4.1
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.11.0
+Version: 0.14.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

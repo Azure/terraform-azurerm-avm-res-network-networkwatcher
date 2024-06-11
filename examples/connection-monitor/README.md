@@ -56,6 +56,7 @@ module "network_watcher_connection_monitor" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   network_watcher_id  = azurerm_network_watcher.this.id
+  tags                = local.tags
 
   condition_monitor = {
     monitor = {
@@ -189,7 +190,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: >= 0.5.0
+Version: >= 0.6.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
@@ -207,13 +208,13 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.11.0
+Version: 0.14.0
 
 ### <a name="module_virtual_machine_2"></a> [virtual\_machine\_2](#module\_virtual\_machine\_2)
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.11.0
+Version: 0.14.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
