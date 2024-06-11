@@ -54,14 +54,15 @@ resource "azurerm_network_watcher" "this" {
 
 # This is the module call
 # with a data source.
-module "default" {
+module "network_watcher_flow_log" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry    = var.enable_telemetry # see variables.tf
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  network_watcher_id  = azurerm_network_watcher.this.id
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  name                 = module.naming.network_watcher.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = azurerm_network_watcher.this.id
+  network_watcher_name = azurerm_network_watcher.this.name
   flow_logs = {
     subnet_flowlog = {
       enabled            = true
@@ -133,8 +134,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.6.2, < 4.0.0)
-
 ## Providers
 
 The following providers are used by this module:
@@ -186,7 +185,19 @@ Default: `"norwayeast"`
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_network_watcher"></a> [network\_watcher](#output\_network\_watcher)
+
+Description: This is the network watcher resource.
+
+### <a name="output_resource_connection_monitor"></a> [resource\_connection\_monitor](#output\_resource\_connection\_monitor)
+
+Description: This is the full output for the connection monitor resources.
+
+### <a name="output_resource_flow_log"></a> [resource\_flow\_log](#output\_resource\_flow\_log)
+
+Description: This is the full output for the flow log resources.
 
 ## Modules
 
@@ -198,17 +209,17 @@ Source: Azure/avm-res-keyvault-vault/azurerm
 
 Version: >= 0.6.0
 
-### <a name="module_default"></a> [default](#module\_default)
-
-Source: ../../
-
-Version:
-
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
 Version: >= 0.4.1
+
+### <a name="module_network_watcher_flow_log"></a> [network\_watcher\_flow\_log](#module\_network\_watcher\_flow\_log)
+
+Source: ../../
+
+Version:
 
 ### <a name="module_virtual_machine"></a> [virtual\_machine](#module\_virtual\_machine)
 

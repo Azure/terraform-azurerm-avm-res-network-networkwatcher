@@ -28,15 +28,16 @@ data "azurerm_client_config" "current" {}
 
 # This is the module call
 # with a data source.
-module "default" {
+module "network_watcher_rbac" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry    = var.enable_telemetry # see variables.tf
-  name                = azurerm_network_watcher.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  network_watcher_id  = azurerm_network_watcher.this.id
-  tags                = local.tags
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  name                 = azurerm_network_watcher.this.name
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = azurerm_network_watcher.this.id
+  network_watcher_name = azurerm_network_watcher.this.name
+  tags                 = local.tags
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
@@ -55,8 +56,6 @@ The following requirements are needed by this module:
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.6.2, < 4.0.0)
 
 ## Providers
 
@@ -101,23 +100,35 @@ Default: `"italynorth"`
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_network_watcher"></a> [network\_watcher](#output\_network\_watcher)
+
+Description: This is the network watcher resource.
+
+### <a name="output_resource_connection_monitor"></a> [resource\_connection\_monitor](#output\_resource\_connection\_monitor)
+
+Description: This is the full output for the connection monitor resources.
+
+### <a name="output_resource_flow_log"></a> [resource\_flow\_log](#output\_resource\_flow\_log)
+
+Description: This is the full output for the flow log resources.
 
 ## Modules
 
 The following Modules are called:
-
-### <a name="module_default"></a> [default](#module\_default)
-
-Source: ../../
-
-Version:
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
 Version: >= 0.4.1
+
+### <a name="module_network_watcher_rbac"></a> [network\_watcher\_rbac](#module\_network\_watcher\_rbac)
+
+Source: ../../
+
+Version:
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

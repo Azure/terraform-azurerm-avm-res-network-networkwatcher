@@ -51,12 +51,13 @@ resource "azurerm_network_watcher" "this" {
 module "network_watcher_connection_monitor" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry    = var.enable_telemetry # see variables.tf
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  network_watcher_id  = azurerm_network_watcher.this.id
-  tags                = local.tags
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  name                 = module.naming.network_watcher.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = azurerm_network_watcher.this.id
+  network_watcher_name = azurerm_network_watcher.this.name
+  tags                 = local.tags
 
   condition_monitor = {
     monitor = {
@@ -118,7 +119,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.6.2, < 4.0.0)
+- <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.11.2, < 1.0.0)
 
 ## Providers
 
@@ -126,7 +127,7 @@ The following providers are used by this module:
 
 - <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
 
-- <a name="provider_time"></a> [time](#provider\_time)
+- <a name="provider_time"></a> [time](#provider\_time) (>= 0.11.2, < 1.0.0)
 
 ## Resources
 
@@ -181,6 +182,10 @@ Description: This is the network watcher resource.
 ### <a name="output_resource_connection_monitor"></a> [resource\_connection\_monitor](#output\_resource\_connection\_monitor)
 
 Description: This is the full output for the connection monitor resources.
+
+### <a name="output_resource_flow_log"></a> [resource\_flow\_log](#output\_resource\_flow\_log)
+
+Description: This is the full output for the flow log resources.
 
 ## Modules
 

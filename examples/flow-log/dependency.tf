@@ -176,7 +176,7 @@ module "virtual_machine" {
 }
 
 resource "azurerm_storage_account" "this" {
-  account_replication_type = "LRS"
+  account_replication_type = "ZRS"
   account_tier             = "Standard"
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique

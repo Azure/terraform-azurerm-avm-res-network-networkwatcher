@@ -1,3 +1,11 @@
+# As network watcher is usually created automatically as part of VNet creation, it is
+# created outside of the AVM and passed in.  Retrieved so that it can be displayed in
+# the output as per the AVM specification
+data "azurerm_network_watcher" "this" {
+  name                = var.network_watcher_name
+  resource_group_name = var.location
+}
+
 # required AVM resources interfaces
 resource "azurerm_management_lock" "this" {
   count = var.lock.kind != "None" ? 1 : 0

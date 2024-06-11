@@ -1,3 +1,8 @@
+output "resource" {
+  description = "The network watcher resource"
+  value       = data.azurerm_network_watcher.this
+}
+
 output "resource_connection_monitor" {
   description = "This is the full output for the connection monitor resources."
   value       = azurerm_network_connection_monitor.this.*
@@ -8,4 +13,9 @@ output "resource_connection_monitor" {
 output "resource_flow_log" {
   description = "This is the full output for the flow log resources."
   value       = azapi_resource.flow_logs
+}
+
+output "resource_id" {
+  description = "The resource id of the Network Watcher"
+  value       = var.network_watcher_id
 }

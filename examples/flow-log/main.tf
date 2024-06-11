@@ -20,14 +20,15 @@ resource "azurerm_network_watcher" "this" {
 
 # This is the module call
 # with a data source.
-module "default" {
+module "network_watcher_flow_log" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry    = var.enable_telemetry # see variables.tf
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  network_watcher_id  = azurerm_network_watcher.this.id
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  name                 = module.naming.network_watcher.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = azurerm_network_watcher.this.id
+  network_watcher_name = azurerm_network_watcher.this.name
   flow_logs = {
     subnet_flowlog = {
       enabled            = true
