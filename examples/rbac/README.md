@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This deploys assigns RBAC to a Network Watcher
 
 ```hcl
 # This ensures we have unique CAF compliant names for our resources.

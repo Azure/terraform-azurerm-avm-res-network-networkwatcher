@@ -2,7 +2,7 @@ resource "azapi_resource" "flow_logs" {
   for_each = var.flow_logs == null ? {} : tomap(var.flow_logs)
 
   type = "Microsoft.Network/networkWatchers/flowLogs@2023-11-01"
-  body = jsonencode({
+  body = {
     properties = {
       enabled = each.value.enabled
       flowAnalyticsConfiguration = {
@@ -25,7 +25,7 @@ resource "azapi_resource" "flow_logs" {
       storageId        = each.value.storage_account_id
       targetResourceId = each.value.target_resource_id
     }
-  })
+  }
   location  = var.location
   name      = each.value.name
   parent_id = var.network_watcher_id
