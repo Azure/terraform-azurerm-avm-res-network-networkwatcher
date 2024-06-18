@@ -5,7 +5,7 @@ output "resource" {
 
 output "resource_connection_monitor" {
   description = "This is the full output for the connection monitor resources."
-  value       = azurerm_network_connection_monitor.this.*
+  value       = azurerm_network_connection_monitor.this[*]
 }
 
 # Module owners should include the full resource via a 'resource' output
