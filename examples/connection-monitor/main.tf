@@ -25,7 +25,6 @@ module "network_watcher_connection_monitor" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
   enable_telemetry     = var.enable_telemetry # see variables.tf
-  name                 = module.naming.network_watcher.name_unique
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
   network_watcher_id   = azurerm_network_watcher.this.id
