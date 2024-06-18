@@ -32,7 +32,6 @@ module "network_watcher_rbac" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
   enable_telemetry     = var.enable_telemetry # see variables.tf
-  name                 = azurerm_network_watcher.this.name
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
   network_watcher_id   = azurerm_network_watcher.this.id
