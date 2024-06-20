@@ -11,11 +11,18 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-resource "azurerm_network_watcher" "this" {
-  location            = var.region
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  tags                = local.tags
+# Wait 10 seconds for the network watcher to be created as a byproduct of the VNet creation
+resource "time_sleep" "wait_10_seconds_for_network_watcher_creation" {
+  create_duration = "10s"
+
+  depends_on = [azurerm_virtual_network.this]
+}
+
+data "azurerm_network_watcher" "this" {
+  name                = local.network_watcher_name
+  resource_group_name = local.network_watcher_resource_group_name
+
+  depends_on = [time_sleep.wait_10_seconds_for_network_watcher_creation]
 }
 
 # This is the module call
@@ -23,11 +30,12 @@ resource "azurerm_network_watcher" "this" {
 module "network_watcher_flow_log" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  resource_group_name  = azurerm_resource_group.this.name
-  location             = azurerm_resource_group.this.location
-  network_watcher_id   = azurerm_network_watcher.this.id
-  network_watcher_name = azurerm_network_watcher.this.name
+  enable_telemetry                    = var.enable_telemetry # see variables.tf
+  resource_group_name                 = azurerm_resource_group.this.name
+  location                            = azurerm_resource_group.this.location
+  network_watcher_id                  = data.azurerm_network_watcher.this.id
+  network_watcher_name                = data.azurerm_network_watcher.this.name
+  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
   flow_logs = {
     subnet_flowlog = {
       enabled            = true
@@ -84,5 +92,6 @@ module "network_watcher_flow_log" {
       }
     }
   }
-  tags = local.tags
+  tags       = local.tags
+  depends_on = [data.azurerm_network_watcher.this]
 }

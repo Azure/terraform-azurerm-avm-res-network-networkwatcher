@@ -45,11 +45,18 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-resource "azurerm_network_watcher" "this" {
-  location            = var.region
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  tags                = local.tags
+# Wait 10 seconds for the network watcher to be created as a byproduct of the VNet creation
+resource "time_sleep" "wait_10_seconds_for_network_watcher_creation" {
+  create_duration = "10s"
+
+  depends_on = [azurerm_virtual_network.this]
+}
+
+data "azurerm_network_watcher" "this" {
+  name                = local.network_watcher_name
+  resource_group_name = local.network_watcher_resource_group_name
+
+  depends_on = [time_sleep.wait_10_seconds_for_network_watcher_creation]
 }
 
 # This is the module call
@@ -57,11 +64,12 @@ resource "azurerm_network_watcher" "this" {
 module "network_watcher_flow_log" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  resource_group_name  = azurerm_resource_group.this.name
-  location             = azurerm_resource_group.this.location
-  network_watcher_id   = azurerm_network_watcher.this.id
-  network_watcher_name = azurerm_network_watcher.this.name
+  enable_telemetry                    = var.enable_telemetry # see variables.tf
+  resource_group_name                 = azurerm_resource_group.this.name
+  location                            = azurerm_resource_group.this.location
+  network_watcher_id                  = data.azurerm_network_watcher.this.id
+  network_watcher_name                = data.azurerm_network_watcher.this.name
+  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
   flow_logs = {
     subnet_flowlog = {
       enabled            = true
@@ -118,7 +126,8 @@ module "network_watcher_flow_log" {
       }
     }
   }
-  tags = local.tags
+  tags       = local.tags
+  depends_on = [data.azurerm_network_watcher.this]
 }
 ```
 
@@ -139,6 +148,8 @@ The following providers are used by this module:
 
 - <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
 
+- <a name="provider_time"></a> [time](#provider\_time)
+
 ## Resources
 
 The following resources are used by this module:
@@ -146,14 +157,15 @@ The following resources are used by this module:
 - [azurerm_log_analytics_workspace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_network_security_group.nic](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) (resource)
 - [azurerm_network_security_group.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) (resource)
-- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_watcher) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_storage_account.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_subnet_network_security_group_association.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_network_security_group_association) (resource)
 - [azurerm_user_assigned_identity.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 - [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
+- [time_sleep.wait_10_seconds_for_network_watcher_creation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/network_watcher) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs

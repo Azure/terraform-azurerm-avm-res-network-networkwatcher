@@ -237,7 +237,7 @@ module "virtual_machine_2" {
 }
 
 # Wait 60 seconds for the virtual machine extensions to be active
-resource "time_sleep" "wait_60_seconds" {
+resource "time_sleep" "wait_60_seconds_for_virtual_machine_extensions_to_be_active" {
   create_duration = "60s"
 
   depends_on = [module.virtual_machine_1, module.virtual_machine_2]

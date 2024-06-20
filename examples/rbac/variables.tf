@@ -12,6 +12,6 @@ DESCRIPTION
 # For simplicity code to find a random region is not included, as the random code can get complex.
 variable "region" {
   type        = string
-  default     = "italynorth"
+  default     = "polandcentral"
   description = "Azure region where the resource should be deployed."
 }

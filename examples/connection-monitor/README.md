@@ -25,8 +25,6 @@ Below are other recommendations related to Network Watcher representing good pra
 - Use [Connection Monitor to monitor Express Route connections](https://learn.microsoft.com/en-us/azure/expressroute/how-to-configure-connection-monitor).
 
 ```hcl
-
-
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
@@ -40,23 +38,30 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-resource "azurerm_network_watcher" "this" {
-  location            = var.region
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  tags                = local.tags
+# Wait 10 seconds for the network watcher to be created as a byproduct of the VNet creation
+resource "time_sleep" "wait_10_seconds_for_network_watcher_creation" {
+  create_duration = "10s"
+
+  depends_on = [azurerm_virtual_network.this]
 }
 
+data "azurerm_network_watcher" "this" {
+  name                = local.network_watcher_name
+  resource_group_name = local.network_watcher_resource_group_name
+
+  depends_on = [time_sleep.wait_10_seconds_for_network_watcher_creation]
+}
 
 module "network_watcher_connection_monitor" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  resource_group_name  = azurerm_resource_group.this.name
-  location             = azurerm_resource_group.this.location
-  network_watcher_id   = azurerm_network_watcher.this.id
-  network_watcher_name = azurerm_network_watcher.this.name
-  tags                 = local.tags
+  enable_telemetry                    = var.enable_telemetry # see variables.tf
+  resource_group_name                 = azurerm_resource_group.this.name
+  location                            = azurerm_resource_group.this.location
+  network_watcher_id                  = data.azurerm_network_watcher.this.id
+  network_watcher_name                = data.azurerm_network_watcher.this.name
+  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
+  tags                                = local.tags
 
   condition_monitor = {
     monitor = {
@@ -105,7 +110,7 @@ module "network_watcher_connection_monitor" {
   }
 
   # Wait 60 seconds for the virtual machine extensions to be active
-  depends_on = [time_sleep.wait_60_seconds]
+  depends_on = [time_sleep.wait_60_seconds_for_virtual_machine_extensions_to_be_active, data.azurerm_network_watcher.this]
 }
 ```
 
@@ -135,13 +140,14 @@ The following resources are used by this module:
 - [azurerm_log_analytics_workspace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_network_security_group.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) (resource)
 - [azurerm_network_security_group.vm](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) (resource)
-- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_watcher) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_subnet_network_security_group_association.example](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_network_security_group_association) (resource)
 - [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
-- [time_sleep.wait_60_seconds](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
+- [time_sleep.wait_10_seconds_for_network_watcher_creation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
+- [time_sleep.wait_60_seconds_for_virtual_machine_extensions_to_be_active](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/network_watcher) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs

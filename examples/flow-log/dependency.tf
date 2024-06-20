@@ -4,9 +4,7 @@ resource "azurerm_virtual_network" "this" {
   name                = module.naming.virtual_network.name_unique
   resource_group_name = azurerm_resource_group.this.name
   dns_servers         = ["10.0.0.4", "10.0.0.5"]
-  tags = {
-    source = "AVM Sample Default Deployment"
-  }
+  tags                = local.tags
 }
 
 resource "azurerm_subnet" "subnet" {

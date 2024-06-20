@@ -10,6 +10,15 @@ module "naming" {
   version = ">= 0.4.1"
 }
 
+resource "azurerm_virtual_network" "this" {
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.virtual_network.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  dns_servers         = ["10.0.0.4", "10.0.0.5"]
+  tags                = local.tags
+}
+
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   location = var.region
@@ -17,11 +26,18 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-resource "azurerm_network_watcher" "this" {
-  location            = var.region
-  name                = module.naming.network_watcher.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  tags                = local.tags
+# Wait 10 seconds for the network watcher to be created as a byproduct of the VNet creation
+resource "time_sleep" "wait_10_seconds_for_network_watcher_creation" {
+  create_duration = "10s"
+
+  depends_on = [azurerm_virtual_network.this]
+}
+
+data "azurerm_network_watcher" "this" {
+  name                = local.network_watcher_name
+  resource_group_name = local.network_watcher_resource_group_name
+
+  depends_on = [time_sleep.wait_10_seconds_for_network_watcher_creation]
 }
 
 data "azurerm_client_config" "current" {}
@@ -31,12 +47,13 @@ data "azurerm_client_config" "current" {}
 module "network_watcher_rbac" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  resource_group_name  = azurerm_resource_group.this.name
-  location             = azurerm_resource_group.this.location
-  network_watcher_id   = azurerm_network_watcher.this.id
-  network_watcher_name = azurerm_network_watcher.this.name
-  tags                 = local.tags
+  enable_telemetry                    = var.enable_telemetry # see variables.tf
+  resource_group_name                 = azurerm_resource_group.this.name
+  location                            = azurerm_resource_group.this.location
+  network_watcher_id                  = data.azurerm_network_watcher.this.id
+  network_watcher_name                = data.azurerm_network_watcher.this.name
+  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
+  tags                                = local.tags
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
@@ -44,6 +61,7 @@ module "network_watcher_rbac" {
       description                = "Assign the Reader role to the deployment user on this network watcher."
     }
   }
+  depends_on = [data.azurerm_network_watcher.this]
 }
 ```
 
@@ -62,13 +80,17 @@ The following providers are used by this module:
 
 - <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
 
+- <a name="provider_time"></a> [time](#provider\_time)
+
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_watcher) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
+- [time_sleep.wait_10_seconds_for_network_watcher_creation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/network_watcher) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -95,7 +117,7 @@ Description: Azure region where the resource should be deployed.
 
 Type: `string`
 
-Default: `"italynorth"`
+Default: `"polandcentral"`
 
 ## Outputs
 

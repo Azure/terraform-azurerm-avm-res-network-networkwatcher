@@ -14,6 +14,11 @@ variable "network_watcher_name" {
   description = "The name of the Network Watcher."
 }
 
+variable "network_watcher_resource_group_name" {
+  type        = string
+  description = "The name of the Network Watcher Resource Group."
+}
+
 # This is required for most resource modules
 variable "resource_group_name" {
   type        = string
