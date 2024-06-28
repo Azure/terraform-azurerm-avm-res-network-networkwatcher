@@ -12,7 +12,12 @@ Things to do:
 1. Configure federated identity credentials on the user assigned managed identity. Use the GitHub environment.
 1. Search and update TODOs within the code and remove the TODO comments once complete.
 
-Major version Zero (0.y.z) is for initial development. Anything MAY change at any time. A module SHOULD NOT be considered stable till at least it is major version one (1.0.0) or greater. Changes will always be via new versions being published and no changes will be made to existing published versions. For more details please go to <https://semver.org/>
+> [!IMPORTANT]
+> As the overall AVM framework is not GA (generally available) yet - the CI framework and test automation is not fully functional and implemented across all supported languages yet - breaking changes are expected, and additional customer feedback is yet to be gathered and incorporated. Hence, modules **MUST NOT** be published at version `1.0.0` or higher at this time.
+>
+> All module **MUST** be published as a pre-release version (e.g., `0.1.0`, `0.1.1`, `0.2.0`, etc.) until the AVM framework becomes GA.
+>
+> However, it is important to note that this **DOES NOT** mean that the modules cannot be consumed and utilized. They **CAN** be leveraged in all types of environments (dev, test, prod etc.). Consumers can treat them just like any other IaC module and raise issues or feature requests against them as they learn from the usage of the module. Consumers should also read the release notes for each version, if considering updating to a more recent version of a module to see if there are any considerations or breaking changes etc.
 
 <!-- markdownlint-disable MD033 -->
 ## Requirements
@@ -21,39 +26,60 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.71.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.13.1, < 2.0.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.6.2, < 4.0.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.71.0)
+- <a name="provider_azapi"></a> [azapi](#provider\_azapi) (>= 1.13.1, < 2.0.0)
 
-- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
+
+- <a name="provider_random"></a> [random](#provider\_random) (>= 3.6.2, < 4.0.0)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_TODO_the_resource_for_this_module.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/TODO_the_resource_for_this_module) (resource)
+- [azapi_resource.flow_logs](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
-- [azurerm_private_endpoint.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
+- [azurerm_network_connection_monitor.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_connection_monitor) (resource)
 - [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
 - [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [random_id.telem](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
-- [azurerm_resource_group.parent](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)
+- [azurerm_network_watcher.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/network_watcher) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
 The following input variables are required:
 
-### <a name="input_name"></a> [name](#input\_name)
+### <a name="input_location"></a> [location](#input\_location)
 
-Description: The name of the this resource.
+Description: Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location.
+
+Type: `string`
+
+### <a name="input_network_watcher_id"></a> [network\_watcher\_id](#input\_network\_watcher\_id)
+
+Description: The ID of the Network Watcher.
+
+Type: `string`
+
+### <a name="input_network_watcher_name"></a> [network\_watcher\_name](#input\_network\_watcher\_name)
+
+Description: The name of the Network Watcher.
+
+Type: `string`
+
+### <a name="input_network_watcher_resource_group_name"></a> [network\_watcher\_resource\_group\_name](#input\_network\_watcher\_resource\_group\_name)
+
+Description: The name of the Network Watcher Resource Group.
 
 Type: `string`
 
@@ -67,56 +93,120 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
-### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
+### <a name="input_condition_monitor"></a> [condition\_monitor](#input\_condition\_monitor)
 
-Description: Customer managed keys that should be associated with the resource.
-
-Type:
-
-```hcl
-object({
-    key_vault_resource_id              = optional(string)
-    key_name                           = optional(string)
-    key_version                        = optional(string, null)
-    user_assigned_identity_resource_id = optional(string, null)
-  })
-```
-
-Default: `{}`
-
-### <a name="input_diagnostic_settings"></a> [diagnostic\_settings](#input\_diagnostic\_settings)
-
-Description: A map of diagnostic settings to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the diagnostic setting. One will be generated if not set, however this will not be unique if you want to create multiple diagnostic setting resources.
-- `log_categories` - (Optional) A set of log categories to send to the log analytics workspace. Defaults to `[]`.
-- `log_groups` - (Optional) A set of log groups to send to the log analytics workspace. Defaults to `["allLogs"]`.
-- `metric_categories` - (Optional) A set of metric categories to send to the log analytics workspace. Defaults to `["AllMetrics"]`.
-- `log_analytics_destination_type` - (Optional) The destination type for the diagnostic setting. Possible values are `Dedicated` and `AzureDiagnostics`. Defaults to `Dedicated`.
-- `workspace_resource_id` - (Optional) The resource ID of the log analytics workspace to send logs and metrics to.
-- `storage_account_resource_id` - (Optional) The resource ID of the storage account to send logs and metrics to.
-- `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
-- `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
-- `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
+Description:   A map of condition monitors to create on the network watcher. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  - `name` - (Required) The name which should be used for this Network Connection Monitor. Changing this forces a new resource to be created.
+  - `location` - (Required) The Azure Region where the Network Connection Monitor should exist. Changing this forces a new resource to be created.
+  - `endpoint` - (Required) Set of endpoint configuration for the condition monitor.
+    - `address` - (Optional) The IP address or domain name of the Network Connection Monitor endpoint.
+    - `coverage_level` - (Optional) The test coverage for the Network Connection Monitor endpoint. Possible values are `AboveAverage`, `Average`, `BelowAverage`, `Default`, `Full` and `Low`.
+    - `excluded_ip_addresses` - (Optional) A list of IPv4/IPv6 subnet masks or IPv4/IPv6 IP addresses to be excluded to the Network Connection Monitor endpoint.
+    - `included_ip_addresses` - (Optional) A list of IPv4/IPv6 subnet masks or IPv4/IPv6 IP addresses to be included to the Network Connection Monitor endpoint.
+    - `name` - (Required) The name of the endpoint for the Network Connection Monitor .
+    - `target_resource_id` - (Optional) The resource ID which is used as the endpoint by the Network Connection Monitor.
+    - `target_resource_type` - (Optional) The endpoint type of the Network Connection Monitor. Possible values are `AzureArcVM`, `AzureSubnet`, `AzureVM`, `AzureVNet`, `ExternalAddress`, `MMAWorkspaceMachine` and `MMAWorkspaceNetwork`.
+    - `filter` supports the following:
+      - `type` - (Optional) The behaviour type of this endpoint filter. Currently the only allowed value is `Include`. Defaults to `Include`.
+      - `item` supports the following:
+        - `address` - (Optional) The address of the filter item.
+        - `type` - (Optional) The type of items included in the filter. Possible values are `AgentAddress`. Defaults to `AgentAddress`.
+  - `test_configuration` - (Required) Set of Test configuration for the condition monitor.
+    - `name` - (Required) The name of test configuration for the Network Connection Monitor.
+    - `preferred_ip_version` - (Optional) The preferred IP version which is used in the test evaluation. Possible values are `IPv4` and `IPv6`.
+    - `protocol` - (Required) The protocol used to evaluate tests. Possible values are `Tcp`, `Http` and `Icmp`.
+    - `test_frequency_in_seconds` - (Optional) The time interval in seconds at which the test evaluation will happen. Defaults to `60`.
+    - `http_configuration` (Optional) A HTTP Configuration as
+      - `method` - (Optional) The HTTP method for the HTTP request. Possible values are `Get` and `Post`. Defaults to `Get`.
+      - `path` - (Optional) The path component of the URI. It only accepts the absolute path.
+      - `port` - (Optional) The port for the HTTP connection.
+      - `prefer_https` - (Optional) Should HTTPS be preferred over HTTP in cases where the choice is not explicit? Defaults to `false`.
+      - `valid_status_code_ranges` - (Optional) The HTTP status codes to consider successful. For instance, `2xx`, `301-304` and `418`.
+    - `request_header` supports the following:
+      - `name` - (Required) The name of the HTTP header.
+      - `value` - (Required) The value of the HTTP header.
+    - `icmp_configuration` supports the following:
+      - `trace_route_enabled` - (Optional) Should path evaluation with trace route be enabled? Defaults to `true`.
+    - `success_threshold` supports the following:
+      - `checks_failed_percent` - (Optional) The maximum percentage of failed checks permitted for a test to be successful.
+      - `round_trip_time_ms` - (Optional) The maximum round-trip time in milliseconds permitted for a test to be successful.
+    - `tcp_configuration` supports the following:
+      - `destination_port_behavior` - (Optional) The destination port behavior for the TCP connection. Possible values are `None` and `ListenIfAvailable`.
+      - `port` - (Required) The port for the TCP connection.
+      - `trace_route_enabled` - (Optional) Should path evaluation with trace route be enabled? Defaults to `true`.
+  - `test_group` - (Required) Set of test groups for the condition monitor.
+    - `destination_endpoints` - (Required) A list of destination endpoint names.
+    - `enabled` - (Optional) Should the test group be enabled? Defaults to `true`.
+    - `name` - (Required) The name of the test group for the Network Connection Monitor.
+    - `source_endpoints` - (Required) A list of source endpoint names.
+    - `test_configuration_names` - (Required) A list of test configuration names.
+  - `notes` - (Optional) The description of the Network Connection Monitor.
+  - `output_workspace_resource_ids` - (Optional) A list of IDs of the Log Analytics Workspace which will accept the output from the Network Connection Monitor.
 
 Type:
 
 ```hcl
 map(object({
-    name                                     = optional(string, null)
-    log_categories                           = optional(set(string), [])
-    log_groups                               = optional(set(string), ["allLogs"])
-    metric_categories                        = optional(set(string), ["AllMetrics"])
-    log_analytics_destination_type           = optional(string, "Dedicated")
-    workspace_resource_id                    = optional(string, null)
-    storage_account_resource_id              = optional(string, null)
-    event_hub_authorization_rule_resource_id = optional(string, null)
-    event_hub_name                           = optional(string, null)
-    marketplace_partner_resource_id          = optional(string, null)
+    name = string
+    endpoint = set(object({
+      address               = optional(string)
+      coverage_level        = optional(string)
+      excluded_ip_addresses = optional(set(string))
+      included_ip_addresses = optional(set(string))
+      name                  = string
+      target_resource_id    = optional(string)
+      target_resource_type  = optional(string)
+      filter = optional(object({
+        type = optional(string)
+        item = optional(set(object({
+          address = optional(string)
+          type    = optional(string)
+        })))
+      }))
+    }))
+    test_configuration = set(object({
+      name                      = string
+      preferred_ip_version      = optional(string)
+      protocol                  = string
+      test_frequency_in_seconds = optional(number)
+      http_configuration = optional(object({
+        method                   = optional(string)
+        path                     = optional(string)
+        port                     = optional(number)
+        prefer_https             = optional(bool)
+        protocol                 = string
+        valid_status_code_ranges = optional(set(string))
+        request_header = optional(set(object({
+          name  = string
+          value = string
+        })))
+      }))
+      icmp_configuration = optional(object({
+        trace_route_enabled = optional(bool)
+      }))
+      success_threshold = optional(object({
+        checks_failed_percent = optional(number)
+        round_trip_time_ms    = optional(number)
+      }))
+      tcp_configuration = optional(object({
+        destination_port_behavior = optional(string)
+        port                      = number
+        trace_route_enabled       = optional(bool)
+      }))
+    }))
+    test_group = set(object({
+      destination_endpoints    = set(string)
+      enabled                  = optional(bool)
+      name                     = string
+      source_endpoints         = set(string)
+      test_configuration_names = set(string)
+    }))
+    notes                         = optional(string, null)
+    output_workspace_resource_ids = optional(list(string), null)
   }))
 ```
 
-Default: `{}`
+Default: `null`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
@@ -128,110 +218,81 @@ Type: `bool`
 
 Default: `true`
 
-### <a name="input_location"></a> [location](#input\_location)
+### <a name="input_flow_logs"></a> [flow\_logs](#input\_flow\_logs)
 
-Description: Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location.
-
-Type: `string`
-
-Default: `null`
-
-### <a name="input_lock"></a> [lock](#input\_lock)
-
-Description: The lock level to apply. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-
-Type:
-
-```hcl
-object({
-    name = optional(string, null)
-    kind = optional(string, "None")
-  })
-```
-
-Default: `{}`
-
-### <a name="input_managed_identities"></a> [managed\_identities](#input\_managed\_identities)
-
-Description: Managed identities to be created for the resource.
-
-Type:
-
-```hcl
-object({
-    system_assigned            = optional(bool, false)
-    user_assigned_resource_ids = optional(set(string), [])
-  })
-```
-
-Default: `{}`
-
-### <a name="input_private_endpoints"></a> [private\_endpoints](#input\_private\_endpoints)
-
-Description: A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  - `name` - The name of the IP configuration.
-  - `private_ip_address` - The private IP address of the IP configuration.
+Description:   
+A map of role flow logs to create for the Network Watcher. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+- `enabled` - (Required) Should Network Flow Logging be Enabled?
+- `name` - (Required) The name of the Network Watcher Flow Log. Changing this forces a new resource to be created.
+- `target_resource_id` - (Required) The ID of the Network Security Group or Virtual Network for which to enable flow logs for. Changing this forces a new resource to be created.
+- `network_watcher_name` - (Required) The name of the Network Watcher. Changing this forces a new resource to be created.
+- `storage_account_id` - (Required) The ID of the Storage Account where flow logs are stored.
+- `version` - (Optional) The version (revision) of the flow log. Possible values are `1` and `2`.
+- `retention_policy` Supports the following:
+  - `days` - (Required) The number of days to retain flow log records.
+  - `enabled` - (Required) Boolean flag to enable/disable retention.
+- `traffic_analytics` (Optional) Supports the following:
+  - `enabled` - (Required) Boolean flag to enable/disable traffic analytics.
+  - `interval_in_minutes` - (Optional) How frequently service should do flow analytics in minutes. Defaults to `60`.
+  - `workspace_id` - (Required) The resource GUID of the attached workspace.
+  - `workspace_region` - (Required) The location of the attached workspace.
+  - `workspace_resource_id` - (Required) The resource ID of the attached workspace.
 
 Type:
 
 ```hcl
 map(object({
-    name = optional(string, null)
-    role_assignments = optional(map(object({
-      role_definition_id_or_name             = string
-      principal_id                           = string
-      description                            = optional(string, null)
-      skip_service_principal_aad_check       = optional(bool, false)
-      condition                              = optional(string, null)
-      condition_version                      = optional(string, null)
-      delegated_managed_identity_resource_id = optional(string, null)
-    })), {})
-    lock = optional(object({
-      name = optional(string, null)
-      kind = optional(string, "None")
-    }), {})
-    tags                                    = optional(map(any), null)
-    subnet_resource_id                      = string
-    private_dns_zone_group_name             = optional(string, "default")
-    private_dns_zone_resource_ids           = optional(set(string), [])
-    application_security_group_associations = optional(map(string), {})
-    private_service_connection_name         = optional(string, null)
-    network_interface_name                  = optional(string, null)
-    location                                = optional(string, null)
-    resource_group_name                     = optional(string, null)
-    ip_configurations = optional(map(object({
-      name               = string
-      private_ip_address = string
-    })), {})
+    enabled            = bool
+    name               = string
+    target_resource_id = string
+    retention_policy = object({
+      days    = number
+      enabled = bool
+    })
+    storage_account_id = string
+    traffic_analytics = optional(object({
+      enabled               = bool
+      interval_in_minutes   = optional(number)
+      workspace_id          = string
+      workspace_region      = string
+      workspace_resource_id = string
+    }), null)
+    version = optional(number, null)
   }))
 ```
 
-Default: `{}`
+Default: `null`
+
+### <a name="input_lock"></a> [lock](#input\_lock)
+
+Description: Controls the Resource Lock configuration for this resource. The following properties can be specified:
+
+- `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+
+Type:
+
+```hcl
+object({
+    kind = string
+    name = optional(string, null)
+  })
+```
+
+Default: `null`
 
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
-Description: A map of role assignments to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+Description: A map of role assignments to create on the <RESOURCE>. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
 
 - `role_definition_id_or_name` - The ID or name of the role definition to assign to the principal.
 - `principal_id` - The ID of the principal to assign the role to.
-- `description` - The description of the role assignment.
-- `skip_service_principal_aad_check` - If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
-- `condition` - The condition which will be used to scope the role assignment.
-- `condition_version` - The version of the condition syntax. Valid values are '2.0'.
+- `description` - (Optional) The description of the role assignment.
+- `skip_service_principal_aad_check` - (Optional) If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
+- `condition` - (Optional) The condition which will be used to scope the role assignment.
+- `condition_version` - (Optional) The version of the condition syntax. Leave as `null` if you are not using a condition, if you are then valid values are '2.0'.
+- `delegated_managed_identity_resource_id` - (Optional) The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created. This field is only used in cross-tenant scenario.
+- `principal_type` - (Optional) The type of the `principal_id`. Possible values are `User`, `Group` and `ServicePrincipal`. It is necessary to explicitly set this attribute when creating role assignments if the principal creating the assignment is constrained by ABAC rules that filters on the PrincipalType attribute.
 
 > Note: only set `skip_service_principal_aad_check` to true if you are assigning a role to a service principal.
 
@@ -246,6 +307,7 @@ map(object({
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
 ```
 
@@ -253,23 +315,31 @@ Default: `{}`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
-Description: The map of tags to be applied to the resource
+Description: (Optional) Tags of the resource.
 
-Type: `map(any)`
+Type: `map(string)`
 
-Default: `{}`
+Default: `null`
 
 ## Outputs
 
 The following outputs are exported:
 
-### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
-
-Description: A map of private endpoints. The map key is the supplied input to var.private\_endpoints. The map value is the entire azurerm\_private\_endpoint resource.
-
 ### <a name="output_resource"></a> [resource](#output\_resource)
 
-Description: This is the full output for the resource.
+Description: The network watcher resource
+
+### <a name="output_resource_connection_monitor"></a> [resource\_connection\_monitor](#output\_resource\_connection\_monitor)
+
+Description: This is the full output for the connection monitor resources.
+
+### <a name="output_resource_flow_log"></a> [resource\_flow\_log](#output\_resource\_flow\_log)
+
+Description: This is the full output for the flow log resources.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource id of the Network Watcher
 
 ## Modules
 

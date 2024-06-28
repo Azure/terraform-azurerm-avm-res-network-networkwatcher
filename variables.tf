@@ -1,3 +1,141 @@
+variable "location" {
+  type        = string
+  description = "Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location."
+  nullable    = false
+}
+
+variable "network_watcher_id" {
+  type        = string
+  description = "The ID of the Network Watcher."
+}
+
+variable "network_watcher_name" {
+  type        = string
+  description = "The name of the Network Watcher."
+}
+
+variable "network_watcher_resource_group_name" {
+  type        = string
+  description = "The name of the Network Watcher Resource Group."
+}
+
+# This is required for most resource modules
+variable "resource_group_name" {
+  type        = string
+  description = "The resource group where the resources will be deployed."
+}
+
+variable "condition_monitor" {
+  type = map(object({
+    name = string
+    endpoint = set(object({
+      address               = optional(string)
+      coverage_level        = optional(string)
+      excluded_ip_addresses = optional(set(string))
+      included_ip_addresses = optional(set(string))
+      name                  = string
+      target_resource_id    = optional(string)
+      target_resource_type  = optional(string)
+      filter = optional(object({
+        type = optional(string)
+        item = optional(set(object({
+          address = optional(string)
+          type    = optional(string)
+        })))
+      }))
+    }))
+    test_configuration = set(object({
+      name                      = string
+      preferred_ip_version      = optional(string)
+      protocol                  = string
+      test_frequency_in_seconds = optional(number)
+      http_configuration = optional(object({
+        method                   = optional(string)
+        path                     = optional(string)
+        port                     = optional(number)
+        prefer_https             = optional(bool)
+        protocol                 = string
+        valid_status_code_ranges = optional(set(string))
+        request_header = optional(set(object({
+          name  = string
+          value = string
+        })))
+      }))
+      icmp_configuration = optional(object({
+        trace_route_enabled = optional(bool)
+      }))
+      success_threshold = optional(object({
+        checks_failed_percent = optional(number)
+        round_trip_time_ms    = optional(number)
+      }))
+      tcp_configuration = optional(object({
+        destination_port_behavior = optional(string)
+        port                      = number
+        trace_route_enabled       = optional(bool)
+      }))
+    }))
+    test_group = set(object({
+      destination_endpoints    = set(string)
+      enabled                  = optional(bool)
+      name                     = string
+      source_endpoints         = set(string)
+      test_configuration_names = set(string)
+    }))
+    notes                         = optional(string, null)
+    output_workspace_resource_ids = optional(list(string), null)
+  }))
+  default     = null
+  description = <<DESCRIPTION
+  A map of condition monitors to create on the network watcher. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  - `name` - (Required) The name which should be used for this Network Connection Monitor. Changing this forces a new resource to be created.
+  - `location` - (Required) The Azure Region where the Network Connection Monitor should exist. Changing this forces a new resource to be created.
+  - `endpoint` - (Required) Set of endpoint configuration for the condition monitor.
+    - `address` - (Optional) The IP address or domain name of the Network Connection Monitor endpoint.
+    - `coverage_level` - (Optional) The test coverage for the Network Connection Monitor endpoint. Possible values are `AboveAverage`, `Average`, `BelowAverage`, `Default`, `Full` and `Low`.
+    - `excluded_ip_addresses` - (Optional) A list of IPv4/IPv6 subnet masks or IPv4/IPv6 IP addresses to be excluded to the Network Connection Monitor endpoint.
+    - `included_ip_addresses` - (Optional) A list of IPv4/IPv6 subnet masks or IPv4/IPv6 IP addresses to be included to the Network Connection Monitor endpoint.
+    - `name` - (Required) The name of the endpoint for the Network Connection Monitor .
+    - `target_resource_id` - (Optional) The resource ID which is used as the endpoint by the Network Connection Monitor.
+    - `target_resource_type` - (Optional) The endpoint type of the Network Connection Monitor. Possible values are `AzureArcVM`, `AzureSubnet`, `AzureVM`, `AzureVNet`, `ExternalAddress`, `MMAWorkspaceMachine` and `MMAWorkspaceNetwork`.
+    - `filter` supports the following:
+      - `type` - (Optional) The behaviour type of this endpoint filter. Currently the only allowed value is `Include`. Defaults to `Include`.
+      - `item` supports the following:
+        - `address` - (Optional) The address of the filter item.
+        - `type` - (Optional) The type of items included in the filter. Possible values are `AgentAddress`. Defaults to `AgentAddress`.
+  - `test_configuration` - (Required) Set of Test configuration for the condition monitor.
+    - `name` - (Required) The name of test configuration for the Network Connection Monitor.
+    - `preferred_ip_version` - (Optional) The preferred IP version which is used in the test evaluation. Possible values are `IPv4` and `IPv6`.
+    - `protocol` - (Required) The protocol used to evaluate tests. Possible values are `Tcp`, `Http` and `Icmp`.
+    - `test_frequency_in_seconds` - (Optional) The time interval in seconds at which the test evaluation will happen. Defaults to `60`.
+    - `http_configuration` (Optional) A HTTP Configuration as 
+      - `method` - (Optional) The HTTP method for the HTTP request. Possible values are `Get` and `Post`. Defaults to `Get`.
+      - `path` - (Optional) The path component of the URI. It only accepts the absolute path.
+      - `port` - (Optional) The port for the HTTP connection.
+      - `prefer_https` - (Optional) Should HTTPS be preferred over HTTP in cases where the choice is not explicit? Defaults to `false`.
+      - `valid_status_code_ranges` - (Optional) The HTTP status codes to consider successful. For instance, `2xx`, `301-304` and `418`.
+    - `request_header` supports the following:
+      - `name` - (Required) The name of the HTTP header.
+      - `value` - (Required) The value of the HTTP header.
+    - `icmp_configuration` supports the following:
+      - `trace_route_enabled` - (Optional) Should path evaluation with trace route be enabled? Defaults to `true`.
+    - `success_threshold` supports the following:
+      - `checks_failed_percent` - (Optional) The maximum percentage of failed checks permitted for a test to be successful.
+      - `round_trip_time_ms` - (Optional) The maximum round-trip time in milliseconds permitted for a test to be successful.
+    - `tcp_configuration` supports the following:
+      - `destination_port_behavior` - (Optional) The destination port behavior for the TCP connection. Possible values are `None` and `ListenIfAvailable`.
+      - `port` - (Required) The port for the TCP connection.
+      - `trace_route_enabled` - (Optional) Should path evaluation with trace route be enabled? Defaults to `true`.
+  - `test_group` - (Required) Set of test groups for the condition monitor.
+    - `destination_endpoints` - (Required) A list of destination endpoint names.
+    - `enabled` - (Optional) Should the test group be enabled? Defaults to `true`.
+    - `name` - (Required) The name of the test group for the Network Connection Monitor.
+    - `source_endpoints` - (Required) A list of source endpoint names.
+    - `test_configuration_names` - (Required) A list of test configuration names.
+  - `notes` - (Optional) The description of the Network Connection Monitor.
+  - `output_workspace_resource_ids` - (Optional) A list of IDs of the Log Analytics Workspace which will accept the output from the Network Connection Monitor.
+  DESCRIPTION
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -8,163 +146,64 @@ If it is set to false, then no telemetry will be collected.
 DESCRIPTION
 }
 
-# This is required for most resource modules
-variable "resource_group_name" {
-  type        = string
-  description = "The resource group where the resources will be deployed."
-}
-
-variable "location" {
-  type        = string
-  description = "Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location."
-  default     = null
-}
-
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-  validation {
-    condition     = can(regex("TODO determine REGEX", var.name))
-    error_message = "The name must be TODO."
-    # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
-}
-
-# required AVM interfaces
-# remove only if not supported by the resource
-# tflint-ignore: terraform_unused_declarations
-variable "customer_managed_key" {
-  type = object({
-    key_vault_resource_id              = optional(string)
-    key_name                           = optional(string)
-    key_version                        = optional(string, null)
-    user_assigned_identity_resource_id = optional(string, null)
-  })
-  description = "Customer managed keys that should be associated with the resource."
-  default     = {}
-}
-
-variable "diagnostic_settings" {
+variable "flow_logs" {
   type = map(object({
-    name                                     = optional(string, null)
-    log_categories                           = optional(set(string), [])
-    log_groups                               = optional(set(string), ["allLogs"])
-    metric_categories                        = optional(set(string), ["AllMetrics"])
-    log_analytics_destination_type           = optional(string, "Dedicated")
-    workspace_resource_id                    = optional(string, null)
-    storage_account_resource_id              = optional(string, null)
-    event_hub_authorization_rule_resource_id = optional(string, null)
-    event_hub_name                           = optional(string, null)
-    marketplace_partner_resource_id          = optional(string, null)
+    enabled            = bool
+    name               = string
+    target_resource_id = string
+    retention_policy = object({
+      days    = number
+      enabled = bool
+    })
+    storage_account_id = string
+    traffic_analytics = optional(object({
+      enabled               = bool
+      interval_in_minutes   = optional(number)
+      workspace_id          = string
+      workspace_region      = string
+      workspace_resource_id = string
+    }), null)
+    version = optional(number, null)
   }))
-  default  = {}
-  nullable = false
+  default     = null
+  description = <<-EOT
 
-  validation {
-    condition     = alltrue([for _, v in var.diagnostic_settings : contains(["Dedicated", "AzureDiagnostics"], v.log_analytics_destination_type)])
-    error_message = "Log analytics destination type must be one of: 'Dedicated', 'AzureDiagnostics'."
-  }
-  validation {
-    condition = alltrue(
-      [
-        for _, v in var.diagnostic_settings :
-        v.workspace_resource_id != null || v.storage_account_resource_id != null || v.event_hub_authorization_rule_resource_id != null || v.marketplace_partner_resource_id != null
-      ]
-    )
-    error_message = "At least one of `workspace_resource_id`, `storage_account_resource_id`, `marketplace_partner_resource_id`, or `event_hub_authorization_rule_resource_id`, must be set."
-  }
-  description = <<DESCRIPTION
-A map of diagnostic settings to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the diagnostic setting. One will be generated if not set, however this will not be unique if you want to create multiple diagnostic setting resources.
-- `log_categories` - (Optional) A set of log categories to send to the log analytics workspace. Defaults to `[]`.
-- `log_groups` - (Optional) A set of log groups to send to the log analytics workspace. Defaults to `["allLogs"]`.
-- `metric_categories` - (Optional) A set of metric categories to send to the log analytics workspace. Defaults to `["AllMetrics"]`.
-- `log_analytics_destination_type` - (Optional) The destination type for the diagnostic setting. Possible values are `Dedicated` and `AzureDiagnostics`. Defaults to `Dedicated`.
-- `workspace_resource_id` - (Optional) The resource ID of the log analytics workspace to send logs and metrics to.
-- `storage_account_resource_id` - (Optional) The resource ID of the storage account to send logs and metrics to.
-- `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
-- `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
-- `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
-DESCRIPTION
+A map of role flow logs to create for the Network Watcher. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+- `enabled` - (Required) Should Network Flow Logging be Enabled?
+- `name` - (Required) The name of the Network Watcher Flow Log. Changing this forces a new resource to be created.
+- `target_resource_id` - (Required) The ID of the Network Security Group or Virtual Network for which to enable flow logs for. Changing this forces a new resource to be created.
+- `network_watcher_name` - (Required) The name of the Network Watcher. Changing this forces a new resource to be created.
+- `storage_account_id` - (Required) The ID of the Storage Account where flow logs are stored.
+- `version` - (Optional) The version (revision) of the flow log. Possible values are `1` and `2`.
+- `retention_policy` Supports the following:
+  - `days` - (Required) The number of days to retain flow log records.
+  - `enabled` - (Required) Boolean flag to enable/disable retention.
+- `traffic_analytics` (Optional) Supports the following:
+  - `enabled` - (Required) Boolean flag to enable/disable traffic analytics.
+  - `interval_in_minutes` - (Optional) How frequently service should do flow analytics in minutes. Defaults to `60`.
+  - `workspace_id` - (Required) The resource GUID of the attached workspace.
+  - `workspace_region` - (Required) The location of the attached workspace.
+  - `workspace_resource_id` - (Required) The resource ID of the attached workspace.
+EOT
 }
 
 variable "lock" {
   type = object({
+    kind = string
     name = optional(string, null)
-    kind = optional(string, "None")
   })
-  description = "The lock level to apply. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`."
-  default     = {}
-  nullable    = false
-  validation {
-    condition     = contains(["CanNotDelete", "ReadOnly", "None"], var.lock.kind)
-    error_message = "The lock level must be one of: 'None', 'CanNotDelete', or 'ReadOnly'."
-  }
-}
-
-# tflint-ignore: terraform_unused_declarations
-variable "managed_identities" {
-  type = object({
-    system_assigned            = optional(bool, false)
-    user_assigned_resource_ids = optional(set(string), [])
-  })
-  description = "Managed identities to be created for the resource."
-  default     = {}
-}
-
-variable "private_endpoints" {
-  type = map(object({
-    name = optional(string, null)
-    role_assignments = optional(map(object({
-      role_definition_id_or_name             = string
-      principal_id                           = string
-      description                            = optional(string, null)
-      skip_service_principal_aad_check       = optional(bool, false)
-      condition                              = optional(string, null)
-      condition_version                      = optional(string, null)
-      delegated_managed_identity_resource_id = optional(string, null)
-    })), {})
-    lock = optional(object({
-      name = optional(string, null)
-      kind = optional(string, "None")
-    }), {})
-    tags                                    = optional(map(any), null)
-    subnet_resource_id                      = string
-    private_dns_zone_group_name             = optional(string, "default")
-    private_dns_zone_resource_ids           = optional(set(string), [])
-    application_security_group_associations = optional(map(string), {})
-    private_service_connection_name         = optional(string, null)
-    network_interface_name                  = optional(string, null)
-    location                                = optional(string, null)
-    resource_group_name                     = optional(string, null)
-    ip_configurations = optional(map(object({
-      name               = string
-      private_ip_address = string
-    })), {})
-  }))
-  default     = {}
+  default     = null
   description = <<DESCRIPTION
-A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+Controls the Resource Lock configuration for this resource. The following properties can be specified:
 
-- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  - `name` - The name of the IP configuration.
-  - `private_ip_address` - The private IP address of the IP configuration.
+- `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
 DESCRIPTION
+
+  validation {
+    condition     = var.lock != null ? contains(["CanNotDelete", "ReadOnly"], var.lock.kind) : true
+    error_message = "Lock kind must be either `\"CanNotDelete\"` or `\"ReadOnly\"`."
+  }
 }
 
 variable "role_assignments" {
@@ -176,26 +215,29 @@ variable "role_assignments" {
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
   default     = {}
   description = <<DESCRIPTION
-A map of role assignments to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+A map of role assignments to create on the <RESOURCE>. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
 
 - `role_definition_id_or_name` - The ID or name of the role definition to assign to the principal.
 - `principal_id` - The ID of the principal to assign the role to.
-- `description` - The description of the role assignment.
-- `skip_service_principal_aad_check` - If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
-- `condition` - The condition which will be used to scope the role assignment.
-- `condition_version` - The version of the condition syntax. Valid values are '2.0'.
+- `description` - (Optional) The description of the role assignment.
+- `skip_service_principal_aad_check` - (Optional) If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
+- `condition` - (Optional) The condition which will be used to scope the role assignment.
+- `condition_version` - (Optional) The version of the condition syntax. Leave as `null` if you are not using a condition, if you are then valid values are '2.0'.
+- `delegated_managed_identity_resource_id` - (Optional) The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created. This field is only used in cross-tenant scenario.
+- `principal_type` - (Optional) The type of the `principal_id`. Possible values are `User`, `Group` and `ServicePrincipal`. It is necessary to explicitly set this attribute when creating role assignments if the principal creating the assignment is constrained by ABAC rules that filters on the PrincipalType attribute.
 
 > Note: only set `skip_service_principal_aad_check` to true if you are assigning a role to a service principal.
 DESCRIPTION
+  nullable    = false
 }
 
 # tflint-ignore: terraform_unused_declarations
 variable "tags" {
-  type        = map(any)
-  description = "The map of tags to be applied to the resource"
-  default     = {}
+  type        = map(string)
+  default     = null
+  description = "(Optional) Tags of the resource."
 }
-

@@ -1,13 +1,21 @@
-# TODO: insert outputs here.
+output "resource" {
+  description = "The network watcher resource"
+  value       = data.azurerm_network_watcher.this
+}
+
+output "resource_connection_monitor" {
+  description = "This is the full output for the connection monitor resources."
+  value       = azurerm_network_connection_monitor.this[*]
+}
 
 # Module owners should include the full resource via a 'resource' output
 # https://azure.github.io/Azure-Verified-Modules/specs/terraform/#id-tffr2---category-outputs---additional-terraform-outputs
-output "resource" {
-  value       = azurerm_this_module_resource.this
-  description = "This is the full output for the resource."
+output "resource_flow_log" {
+  description = "This is the full output for the flow log resources."
+  value       = azapi_resource.flow_logs
 }
 
-output "private_endpoints" {
-  value       = azurerm_private_endpoint.this
-  description = "A map of private endpoints. The map key is the supplied input to var.private_endpoints. The map value is the entire azurerm_private_endpoint resource."
+output "resource_id" {
+  description = "The resource id of the Network Watcher"
+  value       = var.network_watcher_id
 }
