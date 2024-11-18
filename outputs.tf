@@ -16,8 +16,8 @@ output "resource_flow_log" {
 }
 
 output "resource_group_name" {
-  description = "The resource group variable name of the Network Watcher.  It is not used in the AVM as network watcher is not created in this module.  It is a byproduct of creating a VNet."
-  value       = data.azurerm_network_watcher.this.resource_group_name
+  description = "The resource group name of the Network Watcher"
+  value       = var.network_watcher_resource_group_name
 }
 
 output "resource_id" {
