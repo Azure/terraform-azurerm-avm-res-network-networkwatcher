@@ -83,15 +83,9 @@ Description: The name of the Network Watcher.
 
 Type: `string`
 
-### <a name="input_network_watcher_resource_group_name"></a> [network\_watcher\_resource\_group\_name](#input\_network\_watcher\_resource\_group\_name)
-
-Description: The name of the Network Watcher Resource Group.
-
-Type: `string`
-
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
-Description: The resource group where the resources will be deployed.
+Description: The resource group where the network watcher deployed.
 
 Type: `string`
 

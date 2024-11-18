@@ -17,7 +17,7 @@ output "resource_flow_log" {
 
 output "resource_group_name" {
   description = "The resource group name of the Network Watcher"
-  value       = var.network_watcher_resource_group_name
+  value       = var.resource_group_name
 }
 
 output "resource_id" {
