@@ -30,12 +30,11 @@ data "azurerm_network_watcher" "this" {
 module "network_watcher_flow_log" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry                    = var.enable_telemetry # see variables.tf
-  resource_group_name                 = azurerm_resource_group.this.name
-  location                            = azurerm_resource_group.this.location
-  network_watcher_id                  = data.azurerm_network_watcher.this.id
-  network_watcher_name                = data.azurerm_network_watcher.this.name
-  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = data.azurerm_network_watcher.this.id
+  network_watcher_name = data.azurerm_network_watcher.this.name
+  resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
   flow_logs = {
     subnet_flowlog = {
       enabled            = true
