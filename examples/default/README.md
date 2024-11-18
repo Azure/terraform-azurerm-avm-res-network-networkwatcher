@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys assigns RBAC to a Network Watcher
+Default example.  Deploys assigns RBAC to a Network Watcher.
 
 ```hcl
 # This ensures we have unique CAF compliant names for our resources.

@@ -343,6 +343,10 @@ Description: This is the full output for the connection monitor resources.
 
 Description: This is the full output for the flow log resources.
 
+### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
+
+Description: The resource group variable name of the Network Watcher.  It is not used in the AVM as network watcher is not created in this module.  It is a byproduct of creating a VNet.
+
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: The resource id of the Network Watcher
