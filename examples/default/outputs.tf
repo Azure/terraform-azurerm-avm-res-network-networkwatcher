@@ -5,10 +5,10 @@ output "network_watcher" {
 
 output "resource_connection_monitor" {
   description = "This is the full output for the connection monitor resources."
-  value       = module.network_watcher_connection_monitor.resource_connection_monitor
+  value       = module.network_watcher_rbac.resource_connection_monitor
 }
 
 output "resource_flow_log" {
   description = "This is the full output for the flow log resources."
-  value       = module.network_watcher_connection_monitor.resource_flow_log
+  value       = module.network_watcher_rbac.resource_flow_log
 }

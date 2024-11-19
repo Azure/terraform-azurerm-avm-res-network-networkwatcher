@@ -4,6 +4,15 @@ module "naming" {
   version = ">= 0.4.1"
 }
 
+resource "azurerm_virtual_network" "this" {
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.virtual_network.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  dns_servers         = ["10.0.0.4", "10.0.0.5"]
+  tags                = local.tags
+}
+
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   location = var.region
@@ -25,7 +34,11 @@ data "azurerm_network_watcher" "this" {
   depends_on = [time_sleep.wait_10_seconds_for_network_watcher_creation]
 }
 
-module "network_watcher_connection_monitor" {
+data "azurerm_client_config" "current" {}
+
+# This is the module call
+# with a data source.
+module "network_watcher_rbac" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
   enable_telemetry                    = var.enable_telemetry # see variables.tf
@@ -35,53 +48,12 @@ module "network_watcher_connection_monitor" {
   network_watcher_name                = data.azurerm_network_watcher.this.name
   network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
   tags                                = local.tags
-
-  condition_monitor = {
-    monitor = {
-      name = "test-connection-monitor"
-      endpoint = [
-        {
-          name               = "endpoint-vm1"
-          target_resource_id = module.virtual_machine_1.resource_id
-        },
-        {
-          name               = "endpoint-vm2"
-          target_resource_id = module.virtual_machine_2.resource_id
-        }
-      ]
-      test_group = [
-        {
-          name                  = "test-group"
-          enabled               = true
-          source_endpoints      = ["endpoint-vm1"]
-          destination_endpoints = ["endpoint-vm2"]
-        }
-      ]
-      test_configuration = [
-        {
-          name                      = "test-config"
-          test_frequency_in_seconds = 60
-          protocol                  = "Tcp"
-          tcp_configuration = {
-            port = 80
-          }
-        }
-      ]
-      test_group = [
-        {
-          name                     = "test-group"
-          source_endpoints         = ["endpoint-vm1"]
-          destination_endpoints    = ["endpoint-vm2"]
-          test_configuration_names = ["test-config"]
-        }
-      ]
-      notes = "This is a test connection monitor"
-      output_workspace_resource_ids = [
-        azurerm_log_analytics_workspace.this.id
-      ]
+  role_assignments = {
+    role_assignment = {
+      principal_id               = data.azurerm_client_config.current.object_id
+      role_definition_id_or_name = "Reader"
+      description                = "Assign the Reader role to the deployment user on this network watcher."
     }
   }
-
-  # Wait 60 seconds for the virtual machine extensions to be active
-  depends_on = [time_sleep.wait_60_seconds_for_virtual_machine_extensions_to_be_active, data.azurerm_network_watcher.this]
+  depends_on = [data.azurerm_network_watcher.this]
 }
