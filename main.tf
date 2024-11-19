@@ -3,7 +3,7 @@
 # the output as per the AVM specification
 data "azurerm_network_watcher" "this" {
   name                = var.network_watcher_name
-  resource_group_name = var.network_watcher_resource_group_name
+  resource_group_name = var.resource_group_name
 }
 
 # required AVM resources interfaces
