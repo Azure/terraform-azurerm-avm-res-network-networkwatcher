@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys assigns RBAC to a Network Watcher
+Default deployment.  Includes example of assigning RBAC to a Network Watcher
 
 ```hcl
 # This ensures we have unique CAF compliant names for our resources.
@@ -47,13 +47,12 @@ data "azurerm_client_config" "current" {}
 module "network_watcher_rbac" {
   source = "../../"
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry                    = var.enable_telemetry # see variables.tf
-  resource_group_name                 = azurerm_resource_group.this.name
-  location                            = azurerm_resource_group.this.location
-  network_watcher_id                  = data.azurerm_network_watcher.this.id
-  network_watcher_name                = data.azurerm_network_watcher.this.name
-  network_watcher_resource_group_name = data.azurerm_network_watcher.this.resource_group_name
-  tags                                = local.tags
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  location             = azurerm_resource_group.this.location
+  network_watcher_id   = data.azurerm_network_watcher.this.id
+  network_watcher_name = data.azurerm_network_watcher.this.name
+  resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
+  tags                 = local.tags
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
@@ -75,14 +74,6 @@ The following requirements are needed by this module:
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
 
 - <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.11.2, < 1.0.0)
-
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.107.0, < 4.0)
-
-- <a name="provider_time"></a> [time](#provider\_time) (>= 0.11.2, < 1.0.0)
 
 ## Resources
 
