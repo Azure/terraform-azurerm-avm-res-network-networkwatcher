@@ -157,7 +157,13 @@ variable "flow_logs" {
       workspace_id          = string
       workspace_region      = string
       workspace_resource_id = string
-    }), null)
+      }), {
+      enabled               = false
+      interval_in_minutes   = 0
+      workspace_id          = null
+      workspace_region      = null
+      workspace_resource_id = null
+    })
     version = optional(number, null)
   }))
   default     = null
