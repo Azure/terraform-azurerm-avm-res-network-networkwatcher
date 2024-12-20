@@ -75,14 +75,14 @@ module "network_watcher_connection_monitor" {
           target_resource_id = module.virtual_machine_2.resource_id
         }
       ]
-      test_group = [
-        {
-          name                  = "test-group"
-          enabled               = true
-          source_endpoints      = ["endpoint-vm1"]
-          destination_endpoints = ["endpoint-vm2"]
-        }
-      ]
+      # test_group = [
+      #   {
+      #     name                  = "test-group"
+      #     enabled               = true
+      #     source_endpoints      = ["endpoint-vm1"]
+      #     destination_endpoints = ["endpoint-vm2"]
+      #   }
+      # ]
       test_configuration = [
         {
           name                      = "test-config"
