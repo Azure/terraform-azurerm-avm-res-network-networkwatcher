@@ -5,15 +5,15 @@ resource "azapi_resource" "flow_logs" {
   body = {
     properties = {
       enabled = each.value.enabled
-      flowAnalyticsConfiguration = {
+      flowAnalyticsConfiguration = each.value.traffic_analytics != null ? {
         networkWatcherFlowAnalyticsConfiguration = {
           enabled                  = each.value.traffic_analytics.enabled
-          trafficAnalyticsInterval = each.value.traffic_analytics.interval_in_minutes
+          trafficAnalyticsInterval = try(each.value.traffic_analytics.interval_in_minutes, 60)
           workspaceId              = each.value.traffic_analytics.workspace_id
           workspaceRegion          = each.value.traffic_analytics.workspace_region
           workspaceResourceId      = each.value.traffic_analytics.workspace_resource_id
         }
-      }
+      } : {}
       format = {
         type    = "JSON"
         version = each.value.version
