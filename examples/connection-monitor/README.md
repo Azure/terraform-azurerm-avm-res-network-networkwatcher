@@ -120,7 +120,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.107.0, < 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.11.2, < 1.0.0)
 
@@ -209,13 +209,13 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.14.0
+Version: 0.18.0
 
 ### <a name="module_virtual_machine_2"></a> [virtual\_machine\_2](#module\_virtual\_machine\_2)
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.14.0
+Version: 0.18.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

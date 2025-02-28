@@ -136,15 +136,18 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine_1" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.14.0"
+  version = "0.18.0"
 
-  enable_telemetry                       = var.enable_telemetry
-  location                               = azurerm_resource_group.this.location
-  resource_group_name                    = azurerm_resource_group.this.name
-  virtualmachine_os_type                 = "Linux"
-  name                                   = module.naming.virtual_machine.name_unique
-  admin_credential_key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
-  virtualmachine_sku_size                = "Standard_DS2_v2"
+  enable_telemetry    = var.enable_telemetry
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  os_type             = "Linux"
+  name                = module.naming.virtual_machine.name_unique
+  generated_secrets_key_vault_secret_config = {
+    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+
+  sku_size = "Standard_DS2_v2"
 
   zone = 2
 
@@ -187,15 +190,17 @@ module "virtual_machine_1" {
 
 module "virtual_machine_2" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.14.0"
+  version = "0.18.0"
 
-  enable_telemetry                       = var.enable_telemetry
-  location                               = azurerm_resource_group.this.location
-  resource_group_name                    = azurerm_resource_group.this.name
-  virtualmachine_os_type                 = "Linux"
-  name                                   = "${module.naming.virtual_machine.name_unique}-002"
-  admin_credential_key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
-  virtualmachine_sku_size                = "Standard_DS2_v2"
+  enable_telemetry    = var.enable_telemetry
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  os_type             = "Linux"
+  name                = "${module.naming.virtual_machine.name_unique}-002"
+  generated_secrets_key_vault_secret_config = {
+    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+  sku_size = "Standard_DS2_v2"
 
   zone = 2
 
