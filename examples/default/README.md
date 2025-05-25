@@ -46,13 +46,13 @@ data "azurerm_client_config" "current" {}
 # with a data source.
 module "network_watcher_rbac" {
   source = "../../"
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry     = var.enable_telemetry # see variables.tf
+
   location             = azurerm_resource_group.this.location
   network_watcher_id   = data.azurerm_network_watcher.this.id
   network_watcher_name = data.azurerm_network_watcher.this.name
   resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
-  tags                 = local.tags
+  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  enable_telemetry = var.enable_telemetry # see variables.tf
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
@@ -60,6 +60,8 @@ module "network_watcher_rbac" {
       description                = "Assign the Reader role to the deployment user on this network watcher."
     }
   }
+  tags = local.tags
+
   depends_on = [data.azurerm_network_watcher.this]
 }
 ```
