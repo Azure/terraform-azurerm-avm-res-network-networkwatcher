@@ -1,7 +1,10 @@
 resource "azapi_resource" "flow_logs" {
   for_each = var.flow_logs == null ? {} : tomap(var.flow_logs)
 
-  type = "Microsoft.Network/networkWatchers/flowLogs@2023-11-01"
+  location  = var.location
+  name      = each.value.name
+  parent_id = var.network_watcher_id
+  type      = "Microsoft.Network/networkWatchers/flowLogs@2023-11-01"
   body = {
     properties = {
       enabled = each.value.enabled
@@ -26,8 +29,5 @@ resource "azapi_resource" "flow_logs" {
       targetResourceId = each.value.target_resource_id
     }
   }
-  location  = var.location
-  name      = each.value.name
-  parent_id = var.network_watcher_id
-  tags      = var.tags
+  tags = var.tags
 }
