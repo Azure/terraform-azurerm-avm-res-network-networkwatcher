@@ -1,8 +1,8 @@
 resource "azurerm_virtual_network" "this" {
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_network.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  address_space       = ["10.0.0.0/16"]
   dns_servers         = ["10.0.0.4", "10.0.0.5"]
   tags = {
     source = "AVM Sample Default Deployment"
@@ -108,29 +108,27 @@ resource "azurerm_subnet_network_security_group_association" "example" {
 data "azurerm_client_config" "current" {}
 
 module "avm_res_keyvault_vault" {
-  source              = "Azure/avm-res-keyvault-vault/azurerm"
-  version             = ">= 0.6.0"
-  tenant_id           = data.azurerm_client_config.current.tenant_id
+  source  = "Azure/avm-res-keyvault-vault/azurerm"
+  version = ">= 0.6.0"
+
+  location            = azurerm_resource_group.this.location
   name                = module.naming.key_vault.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  tenant_id           = data.azurerm_client_config.current.tenant_id
   network_acls = {
     default_action = "Allow"
   }
-
   role_assignments = {
     deployment_user_secrets = {
       role_definition_id_or_name = "Key Vault Secrets Officer"
       principal_id               = data.azurerm_client_config.current.object_id
     }
   }
-
-  wait_for_rbac_before_secret_operations = {
-    create = "60s"
-  }
-
   tags = {
     source = "AVM Sample Default Deployment"
+  }
+  wait_for_rbac_before_secret_operations = {
+    create = "60s"
   }
 }
 
@@ -138,26 +136,8 @@ module "virtual_machine_1" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.18.0"
 
-  enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  os_type             = "Linux"
-  name                = module.naming.virtual_machine.name_unique
-  generated_secrets_key_vault_secret_config = {
-    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
-  }
-
-  sku_size = "Standard_DS2_v2"
-
-  zone = 2
-
-  source_image_reference = {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts-gen2"
-    version   = "latest"
-  }
-
+  location = azurerm_resource_group.this.location
+  name     = module.naming.virtual_machine.name_unique
   network_interfaces = {
     network_interface_1 = {
       name                      = module.naming.network_interface.name_unique
@@ -170,7 +150,9 @@ module "virtual_machine_1" {
       }
     }
   }
-
+  resource_group_name = azurerm_resource_group.this.name
+  zone                = 2
+  enable_telemetry    = var.enable_telemetry
   extensions = {
     network_watcher = {
       name                       = "networkWatcher"
@@ -180,7 +162,17 @@ module "virtual_machine_1" {
       auto_upgrade_minor_version = true
     }
   }
-
+  generated_secrets_key_vault_secret_config = {
+    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+  os_type  = "Linux"
+  sku_size = "Standard_DS2_v2"
+  source_image_reference = {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts-gen2"
+    version   = "latest"
+  }
   tags = local.tags
 
   depends_on = [
@@ -192,25 +184,8 @@ module "virtual_machine_2" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.18.0"
 
-  enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  os_type             = "Linux"
-  name                = "${module.naming.virtual_machine.name_unique}-002"
-  generated_secrets_key_vault_secret_config = {
-    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
-  }
-  sku_size = "Standard_DS2_v2"
-
-  zone = 2
-
-  source_image_reference = {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts-gen2"
-    version   = "latest"
-  }
-
+  location = azurerm_resource_group.this.location
+  name     = "${module.naming.virtual_machine.name_unique}-002"
   network_interfaces = {
     network_interface_1 = {
       name                      = "${module.naming.network_interface.name_unique}-002"
@@ -223,7 +198,9 @@ module "virtual_machine_2" {
       }
     }
   }
-
+  resource_group_name = azurerm_resource_group.this.name
+  zone                = 2
+  enable_telemetry    = var.enable_telemetry
   extensions = {
     network_watcher = {
       name                       = "networkWatcher"
@@ -233,7 +210,17 @@ module "virtual_machine_2" {
       auto_upgrade_minor_version = true
     }
   }
-
+  generated_secrets_key_vault_secret_config = {
+    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+  os_type  = "Linux"
+  sku_size = "Standard_DS2_v2"
+  source_image_reference = {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts-gen2"
+    version   = "latest"
+  }
   tags = local.tags
 
   depends_on = [
