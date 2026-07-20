@@ -132,7 +132,7 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.18.0"
+  version = "0.21.0"
 
   location = azurerm_resource_group.this.location
   name     = module.naming.virtual_machine.name_unique
