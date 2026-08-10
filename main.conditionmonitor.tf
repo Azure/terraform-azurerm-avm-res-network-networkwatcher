@@ -38,6 +38,7 @@ resource "azurerm_network_connection_monitor" "this" {
       }
     }
   }
+
   dynamic "test_configuration" {
     for_each = each.value.test_configuration == null ? [] : each.value.test_configuration
 
@@ -93,6 +94,7 @@ resource "azurerm_network_connection_monitor" "this" {
       }
     }
   }
+
   dynamic "test_group" {
     for_each = each.value.test_group == null ? [] : each.value.test_group
 
@@ -105,4 +107,3 @@ resource "azurerm_network_connection_monitor" "this" {
     }
   }
 }
-
