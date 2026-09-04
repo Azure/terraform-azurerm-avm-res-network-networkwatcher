@@ -10,10 +10,10 @@ resource "azurerm_virtual_network" "this" {
 }
 
 resource "azurerm_subnet" "subnet" {
-  address_prefixes     = ["10.0.1.0/24"]
   name                 = module.naming.subnet.name_unique
   resource_group_name  = azurerm_resource_group.this.name
   virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
 # network security group for the subnet with a rule to allow http, https and ssh traffic
@@ -234,7 +234,6 @@ resource "time_sleep" "wait_60_seconds_for_virtual_machine_extensions_to_be_acti
 
   depends_on = [module.virtual_machine_1, module.virtual_machine_2]
 }
-
 
 resource "azurerm_log_analytics_workspace" "this" {
   location            = azurerm_resource_group.this.location
