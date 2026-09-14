@@ -134,8 +134,14 @@ module "virtual_machine" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
   version = "0.21.0"
 
-  location = azurerm_resource_group.this.location
-  name     = module.naming.virtual_machine.name_unique
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.virtual_machine.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  zone                = 2
+  enable_telemetry    = var.enable_telemetry
+  generated_secrets_key_vault_secret_config = {
+    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
   network_interfaces = {
     network_interface_1 = {
       name                      = module.naming.network_interface.name_unique
@@ -147,12 +153,6 @@ module "virtual_machine" {
         }
       }
     }
-  }
-  resource_group_name = azurerm_resource_group.this.name
-  zone                = 2
-  enable_telemetry    = var.enable_telemetry
-  generated_secrets_key_vault_secret_config = {
-    key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
   }
   os_type  = "Linux"
   sku_size = "Standard_DS2_v2"
