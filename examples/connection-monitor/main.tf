@@ -78,7 +78,7 @@ module "network_watcher_connection_monitor" {
     }
   }
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  enable_telemetry = false # see variables.tf
   tags             = local.tags
 
   # Wait 60 seconds for the virtual machine extensions to be active
