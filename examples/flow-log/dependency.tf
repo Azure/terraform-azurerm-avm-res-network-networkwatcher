@@ -113,6 +113,7 @@ module "avm_res_keyvault_vault" {
   name                = module.naming.key_vault.name_unique
   resource_group_name = azurerm_resource_group.this.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
+  enable_telemetry    = false
   network_acls = {
     default_action = "Allow"
   }
@@ -150,7 +151,7 @@ module "virtual_machine" {
   }
   resource_group_name = azurerm_resource_group.this.name
   zone                = 2
-  enable_telemetry    = var.enable_telemetry
+  enable_telemetry    = false
   generated_secrets_key_vault_secret_config = {
     key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
   }
