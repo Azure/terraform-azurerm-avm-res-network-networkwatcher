@@ -232,7 +232,7 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.18.0
+Version: 0.21.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
