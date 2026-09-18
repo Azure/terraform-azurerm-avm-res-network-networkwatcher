@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Azure Network Watcher",
+  "moduleDescription": "AVM Resource Module for Azure Network Watcher",
+  "canonicalType": "Microsoft.Network/networkWatchers",
+  "owners": [
+    "terrymandin"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.res.703535a"
+}
