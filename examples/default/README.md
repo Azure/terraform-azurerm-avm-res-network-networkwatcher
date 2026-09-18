@@ -53,7 +53,7 @@ module "network_watcher_rbac" {
   network_watcher_name = data.azurerm_network_watcher.this.name
   resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
   # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
-  enable_telemetry = false # see variables.tf
+  enable_telemetry = var.enable_telemetry # see variables.tf
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
@@ -105,7 +105,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ### <a name="input_region"></a> [region](#input\_region)
 
