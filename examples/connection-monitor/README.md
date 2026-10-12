@@ -29,7 +29,7 @@ Below are other recommendations related to Network Watcher representing good pra
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = ">= 0.4.1"
+  version = "0.4.4"
 }
 
 # This is required for resource modules
@@ -192,13 +192,13 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: >= 0.6.0
+Version: 0.11.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
-Version: >= 0.4.1
+Version: 0.4.4
 
 ### <a name="module_network_watcher_connection_monitor"></a> [network\_watcher\_connection\_monitor](#module\_network\_watcher\_connection\_monitor)
 
