@@ -8,7 +8,7 @@ Default deployment.  Includes example of assigning RBAC to a Network Watcher
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = ">= 0.4.1"
+  version = "0.4.4"
 }
 
 resource "azurerm_virtual_network" "this" {
@@ -139,7 +139,7 @@ The following Modules are called:
 
 Source: Azure/naming/azurerm
 
-Version: >= 0.4.1
+Version: 0.4.4
 
 ### <a name="module_network_watcher_rbac"></a> [network\_watcher\_rbac](#module\_network\_watcher\_rbac)
 
