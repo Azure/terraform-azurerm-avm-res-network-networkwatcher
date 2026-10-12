@@ -210,13 +210,13 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.18.0
+Version: 0.21.0
 
 ### <a name="module_virtual_machine_2"></a> [virtual\_machine\_2](#module\_virtual\_machine\_2)
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.18.0
+Version: 0.21.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

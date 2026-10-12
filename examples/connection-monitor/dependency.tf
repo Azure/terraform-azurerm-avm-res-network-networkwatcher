@@ -135,22 +135,10 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine_1" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.18.0"
+  version = "0.21.0"
 
-  location = azurerm_resource_group.this.location
-  name     = module.naming.virtual_machine.name_unique
-  network_interfaces = {
-    network_interface_1 = {
-      name                      = module.naming.network_interface.name_unique
-      network_security_group_id = azurerm_network_security_group.vm.id
-      ip_configurations = {
-        ip_configuration_1 = {
-          name                          = "${module.naming.network_interface.name_unique}-ipconfig1"
-          private_ip_subnet_resource_id = azurerm_subnet.subnet.id
-        }
-      }
-    }
-  }
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.virtual_machine.name_unique
   resource_group_name = azurerm_resource_group.this.name
   zone                = 2
   enable_telemetry    = var.enable_telemetry
@@ -165,6 +153,18 @@ module "virtual_machine_1" {
   }
   generated_secrets_key_vault_secret_config = {
     key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+  network_interfaces = {
+    network_interface_1 = {
+      name                      = module.naming.network_interface.name_unique
+      network_security_group_id = azurerm_network_security_group.vm.id
+      ip_configurations = {
+        ip_configuration_1 = {
+          name                          = "${module.naming.network_interface.name_unique}-ipconfig1"
+          private_ip_subnet_resource_id = azurerm_subnet.subnet.id
+        }
+      }
+    }
   }
   os_type  = "Linux"
   sku_size = "Standard_DS2_v2"
@@ -183,22 +183,10 @@ module "virtual_machine_1" {
 
 module "virtual_machine_2" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.18.0"
+  version = "0.21.0"
 
-  location = azurerm_resource_group.this.location
-  name     = "${module.naming.virtual_machine.name_unique}-002"
-  network_interfaces = {
-    network_interface_1 = {
-      name                      = "${module.naming.network_interface.name_unique}-002"
-      network_security_group_id = azurerm_network_security_group.vm.id
-      ip_configurations = {
-        ip_configuration_1 = {
-          name                          = "${module.naming.network_interface.name_unique}-ipconfig1"
-          private_ip_subnet_resource_id = azurerm_subnet.subnet.id
-        }
-      }
-    }
-  }
+  location            = azurerm_resource_group.this.location
+  name                = "${module.naming.virtual_machine.name_unique}-002"
   resource_group_name = azurerm_resource_group.this.name
   zone                = 2
   enable_telemetry    = var.enable_telemetry
@@ -213,6 +201,18 @@ module "virtual_machine_2" {
   }
   generated_secrets_key_vault_secret_config = {
     key_vault_resource_id = module.avm_res_keyvault_vault.resource_id
+  }
+  network_interfaces = {
+    network_interface_1 = {
+      name                      = "${module.naming.network_interface.name_unique}-002"
+      network_security_group_id = azurerm_network_security_group.vm.id
+      ip_configurations = {
+        ip_configuration_1 = {
+          name                          = "${module.naming.network_interface.name_unique}-ipconfig1"
+          private_ip_subnet_resource_id = azurerm_subnet.subnet.id
+        }
+      }
+    }
   }
   os_type  = "Linux"
   sku_size = "Standard_DS2_v2"
