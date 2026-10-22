@@ -106,9 +106,8 @@ resource "azurerm_subnet_network_security_group_association" "example" {
 data "azurerm_client_config" "current" {}
 
 module "avm_res_keyvault_vault" {
-  source    = "Azure/avm-res-keyvault-vault/azurerm"
-  version   = "0.11.0"
-  providers = { modtm = modtm }
+  source  = "Azure/avm-res-keyvault-vault/azurerm"
+  version = "0.11.0"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.key_vault.name_unique
@@ -133,9 +132,8 @@ module "avm_res_keyvault_vault" {
 }
 
 module "virtual_machine" {
-  source    = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version   = "0.18.0"
-  providers = { modtm = modtm }
+  source  = "Azure/avm-res-compute-virtualmachine/azurerm"
+  version = "0.18.0"
 
   location = azurerm_resource_group.this.location
   name     = module.naming.virtual_machine.name_unique
