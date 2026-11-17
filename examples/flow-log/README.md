@@ -69,7 +69,7 @@ module "network_watcher_flow_log" {
   network_watcher_id   = data.azurerm_network_watcher.this.id
   network_watcher_name = data.azurerm_network_watcher.this.name
   resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  # source             = "Azure/avm-res-network-networkwatcher/azurerm"
   enable_telemetry = var.enable_telemetry # see variables.tf
   flow_logs = {
     subnet_flowlog = {

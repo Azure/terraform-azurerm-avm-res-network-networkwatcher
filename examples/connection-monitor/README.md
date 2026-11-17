@@ -105,7 +105,7 @@ module "network_watcher_connection_monitor" {
       ]
     }
   }
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  # source             = "Azure/avm-res-network-networkwatcher/azurerm"
   enable_telemetry = var.enable_telemetry # see variables.tf
   tags             = local.tags
 
