@@ -144,8 +144,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
 - <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.11.2, < 1.0.0)
 
 ## Resources
@@ -216,7 +214,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: 0.11.0
+Version: 0.13.1
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
@@ -234,7 +232,7 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.18.0
+Version: 0.22.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
