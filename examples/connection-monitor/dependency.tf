@@ -109,13 +109,13 @@ data "azurerm_client_config" "current" {}
 
 module "avm_res_keyvault_vault" {
   source  = "Azure/avm-res-keyvault-vault/azurerm"
-  version = "0.12.0"
+  version = "0.13.1"
 
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.key_vault.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  enable_telemetry    = var.enable_telemetry
+  location         = azurerm_resource_group.this.location
+  name             = module.naming.key_vault.name_unique
+  parent_id        = azurerm_resource_group.this.id
+  tenant_id        = data.azurerm_client_config.current.tenant_id
+  enable_telemetry = var.enable_telemetry
   network_acls = {
     default_action = "Allow"
   }
@@ -135,7 +135,7 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine_1" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.21.0"
+  version = "0.22.0"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_machine.name_unique
@@ -183,7 +183,7 @@ module "virtual_machine_1" {
 
 module "virtual_machine_2" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.21.0"
+  version = "0.22.0"
 
   location            = azurerm_resource_group.this.location
   name                = "${module.naming.virtual_machine.name_unique}-002"

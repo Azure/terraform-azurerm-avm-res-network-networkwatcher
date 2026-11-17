@@ -105,7 +105,7 @@ module "network_watcher_connection_monitor" {
       ]
     }
   }
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  # source             = "Azure/avm-res-network-networkwatcher/azurerm"
   enable_telemetry = var.enable_telemetry # see variables.tf
   tags             = local.tags
 
@@ -119,11 +119,9 @@ module "network_watcher_connection_monitor" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.16.0, < 2.0.0)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
-
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 - <a name="requirement_time"></a> [time](#requirement\_time) (>= 0.11.2, < 1.0.0)
 
@@ -194,7 +192,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: 0.12.0
+Version: 0.13.1
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
@@ -212,13 +210,13 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.21.0
+Version: 0.22.0
 
 ### <a name="module_virtual_machine_2"></a> [virtual\_machine\_2](#module\_virtual\_machine\_2)
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.21.0
+Version: 0.22.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
