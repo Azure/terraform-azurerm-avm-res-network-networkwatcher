@@ -52,7 +52,7 @@ module "network_watcher_rbac" {
   network_watcher_id   = data.azurerm_network_watcher.this.id
   network_watcher_name = data.azurerm_network_watcher.this.name
   resource_group_name  = data.azurerm_network_watcher.this.resource_group_name
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  # source             = "Azure/avm-res-network-networkwatcher/azurerm"
   enable_telemetry = var.enable_telemetry # see variables.tf
   role_assignments = {
     role_assignment = {
@@ -72,7 +72,7 @@ module "network_watcher_rbac" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.11.0, < 2.0.0)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 

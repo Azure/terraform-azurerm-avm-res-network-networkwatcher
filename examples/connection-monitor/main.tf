@@ -1,7 +1,7 @@
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/avm-utl-naming/azure"
-  version = "0.2.0"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
@@ -77,7 +77,7 @@ module "network_watcher_connection_monitor" {
       ]
     }
   }
-  # source             = "Azure/azurerm-avm-res-network-networkwatcher/azurerm"
+  # source             = "Azure/avm-res-network-networkwatcher/azurerm"
   enable_telemetry = var.enable_telemetry # see variables.tf
   tags             = local.tags
 
