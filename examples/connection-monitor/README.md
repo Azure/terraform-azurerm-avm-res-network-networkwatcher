@@ -192,7 +192,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: 0.13.1
+Version: 0.13.2
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
@@ -210,13 +210,13 @@ Version:
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.22.0
+Version: 0.22.1
 
 ### <a name="module_virtual_machine_2"></a> [virtual\_machine\_2](#module\_virtual\_machine\_2)
 
 Source: Azure/avm-res-compute-virtualmachine/azurerm
 
-Version: 0.22.0
+Version: 0.22.1
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

@@ -109,7 +109,7 @@ data "azurerm_client_config" "current" {}
 
 module "avm_res_keyvault_vault" {
   source  = "Azure/avm-res-keyvault-vault/azurerm"
-  version = "0.13.1"
+  version = "0.13.2"
 
   location         = azurerm_resource_group.this.location
   name             = module.naming.key_vault.name_unique
@@ -135,7 +135,7 @@ module "avm_res_keyvault_vault" {
 
 module "virtual_machine_1" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.22.0"
+  version = "0.22.1"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_machine.name_unique
@@ -183,7 +183,7 @@ module "virtual_machine_1" {
 
 module "virtual_machine_2" {
   source  = "Azure/avm-res-compute-virtualmachine/azurerm"
-  version = "0.22.0"
+  version = "0.22.1"
 
   location            = azurerm_resource_group.this.location
   name                = "${module.naming.virtual_machine.name_unique}-002"
